@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>Gestión de Usuarios</h1>
+
+    <!-- Mostrar mensajes -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="tabla-usuarios">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios %}
+                <tr>
+                    <td>{{ u.id }}</td>
+                    <td>{{ u.username }}</td>
+                    <td>{{ u.email }}</td>
+                    <td>{{ u.telefono|default:"-" }}</td>
+                    <td>
+                        {% if u.is_superuser or u.is_staff %}
+                            <span class="rol admin">Administrador</span>
+                        {% else %}
+                            <span class="rol user">Usuario</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <!-- Eliminar -->
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ u.id }}">
+                            <input type="hidden" name="action" value="delete">
+                            <button type="submit" class="btn eliminar"
+                                onclick="return confirm('¿Eliminar al usuario {{ u.username }}?')">
+                                Eliminar
+                            </button>
+                        </form>
+
+                        <!-- Cambiar rol -->
+                        {% if not u.is_staff %}
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ u.id }}">
+                            <input type="hidden" name="action" value="make_admin">
+                            <button type="submit" class="btn admin">
+                                Hacer admin
+                            </button>
+                        </form>
+                        {% elif not u.is_superuser %}
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ u.id }}">
+                            <input type="hidden" name="action" value="remove_admin">
+                            <button type="submit" class="btn quitar-admin">
+                                Quitar admin
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center;">No hay usuarios registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

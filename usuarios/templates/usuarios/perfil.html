@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="perfil-wrapper">
+
+    <div class="perfil-card">
+        <div class="perfil-info">
+            <h2>Perfil Personal</h2>
+
+            <div class="perfil-item">
+                <label>Nombre de Usuario</label>
+                <input type="text" value="{{ user.username }}" readonly>
+            </div>
+
+            <div class="perfil-item">
+                <label>Correo Electrónico</label>
+                <input type="email" value="{{ user.email }}" readonly>
+            </div>
+
+            <div class="perfil-item">
+                <label>Número de Teléfono</label>
+                <input type="text" value="{{ user.telefono|default:'No registrado' }}" readonly>
+            </div>
+        </div>
+
+        <div class="perfil-foto">
+
+            <!-- CONTENEDOR FIJO -->
+            <div class="foto-circulo">
+                {% if user.foto_perfil %}
+                    <img src="{{ user.foto_perfil.url }}" id="previewFoto">
+                {% else %}
+                    <img src="{% static 'img/default_user.png' %}" id="previewFoto">
+                {% endif %}
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <input type="file"
+                       name="foto_perfil"
+                       id="id_foto_perfil"
+                       accept="image/*"
+                       hidden
+                       onchange="previewImage(event)">
+
+                <label for="id_foto_perfil" class="editar-btn">
+                    Cambiar foto
+                </label>
+
+                <button type="submit" class="editar-btn guardar-btn">
+                    Guardar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="emprendimiento-box">
+        <h3>Registrar Emprendimiento</h3>
+        <a href="{% url 'crear_emprendimiento' %}">
+            <button class="registrar-btn">Registrar</button>
+        </a>
+    </div>
+
+    <div class="cerrar-box">
+        <a href="{% url 'logout' %}" class="cerrar-sesion-btn">Cerrar Sesión</a>
+    </div>
+
+</div>
+
+<script>
+function previewImage(event) {
+    const img = document.getElementById('previewFoto');
+    img.src = URL.createObjectURL(event.target.files[0]);
+}
+</script>
+{% endblock %}

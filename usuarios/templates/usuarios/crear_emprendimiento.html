@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="registro-wrapper" style="max-width:900px; margin: 20px auto;">
+
+    <h1 class="titulo">Bienvenido, comencemos con el registro de tu emprendimiento</h1>
+    <p class="subtitulo">
+        Ayúdanos a conocerte mejor. Registra la información solicitada para evaluar tu solicitud.
+    </p>
+
+    {% if form.errors %}
+        <div class="alert alert-error">
+            <p>Por favor corrige los errores del formulario.</p>
+            {{ form.errors }}
+        </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- ======================= CARD 1 ======================= -->
+        <div class="card-form">
+
+            <div class="fila-3">
+                <div class="campo">
+                    <label>Nombre(s) del emprendedor</label>
+                    {{ form.nombre_emprendedor }}
+                </div>
+
+                <div class="campo">
+                    <label>Apellidos</label>
+                    {{ form.apellidos }}
+                </div>
+
+                <div class="campo">
+                    <label>Fecha de nacimiento</label>
+                    {{ form.fecha_nacimiento }}
+                </div>
+            </div>
+
+            <div class="fila-2">
+                <div class="campo">
+                    <label>Tipo de documento</label>
+                    {{ form.tipo_documento }}
+                </div>
+
+                <div class="campo">
+                    <label>Número de documento</label>
+                    {{ form.numero_documento }}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ======================= CARD 2 ======================= -->
+        <div class="card-form">
+
+            <h2 class="seccion-titulo">Información del emprendimiento</h2>
+
+            <div class="fila-3">
+                <div class="campo">
+                    <label>Nombre del emprendimiento</label>
+                    {{ form.nombre }}
+                </div>
+
+                <div class="campo">
+                    <label>Tipo de emprendimiento</label>
+                    {{ form.tipo_emprendimiento }}
+                </div>
+
+                <div class="campo">
+                    <label>Fecha de creación</label>
+                    {{ form.fecha_creacion }}
+                </div>
+            </div>
+
+            <div class="fila-full">
+                <div class="campo">
+                    <label>Descripción</label>
+                    {{ form.descripcion }}
+                </div>
+            </div>
+
+            <div class="fila-3">
+                <div class="campo">
+                    <label>¿El emprendimiento es estático?</label>
+                    {{ form.es_estatico }}
+                </div>
+
+                <div class="campo">
+                    <label>¿Cuenta con servicio a domicilio?</label>
+                    {{ form.tiene_domicilio }}
+                </div>
+
+                <div class="campo">
+                    <label>Método de pago</label>
+                    {{ form.metodo_pago }}
+                </div>
+            </div>
+
+            <div class="fila-full">
+                <div class="campo">
+                    <label>Ubicación</label>
+                    {{ form.ubicacion }}
+                </div>
+            </div>
+
+            <!-- 👇 CAMPO CIUDAD (CORRECCIÓN) -->
+            <div class="fila-2">
+                <div class="campo">
+                    <label>Ciudad</label>
+                    {{ form.ciudad }}
+                </div>
+            </div>
+
+            <div class="fila-2">
+                <div class="campo">
+                    <label>¿Eres estudiante?</label>
+                    {{ form.es_estudiante }}
+                </div>
+
+                <div class="campo">
+                    <label>Institución educativa (si aplica)</label>
+                    {{ form.institucion }}
+                </div>
+            </div>
+
+            <div class="fila-2">
+                <div class="campo">
+                    <label>¿Vendes dentro de la institución?</label>
+                    {{ form.vende_en_institucion }}
+                </div>
+
+                <div class="archivos">
+                    <div class="file-item">
+                        <label>Logo</label>
+                        {{ form.logo }}
+                    </div>
+
+                    <div class="file-item">
+                        <label>IGMS productos</label>
+                        {{ form.igms_productos }}
+                    </div>
+
+                    <div class="file-item">
+                        <label>Documento de identidad</label>
+                        {{ form.documento_identidad }}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ======================= CARD 3 ======================= -->
+        <div class="card-form">
+
+            <div class="fila-2">
+                <div class="checks">
+                    <label>
+                        <input type="checkbox" required>
+                        Acepto términos y condiciones
+                    </label><br>
+                    <label>
+                        <input type="checkbox" required>
+                        Acepto política de datos
+                    </label>
+                </div>
+
+                <div class="submit-box">
+                    <button type="submit" class="btn-submit">
+                        Enviar solicitud
+                    </button>
+                </div>
+            </div>
+
+            <p class="nota-final">
+                La solicitud quedará en revisión y será evaluada por el administrador.
+            </p>
+
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

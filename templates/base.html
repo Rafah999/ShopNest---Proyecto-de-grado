@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopNest</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+    <style>
+        /* === ESTILO DEL CUADRO DE MENSAJE DE INICIO === */
+        .inicio-mensaje {
+            background: rgba(150, 140, 150, 0.85);
+            color: #000;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 20px auto;
+            padding: 15px 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .inicio-mensaje strong {
+            color: #4a0e83;
+        }
+    </style>
+</head>
+
+<body class="{% if body_class %}{{ body_class }}{% endif %}">
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <a href="{% url 'index' %}" class="brand">ShopNest</a>
+        <div class="nav-right">
+
+            {% if user.is_authenticated %}
+                <div class="user-menu">
+                    <div class="user-circle" id="userCircle">
+                        {{ user.username|first|upper }}
+                    </div>
+
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="{% url 'perfil' %}">Perfil</a>
+
+                        {% if user.is_superuser or user.is_staff or user.is_admin_manual %}
+                            <a href="{% url 'admin_dashboard' %}">Admin Panel</a>
+                        {% endif %}
+
+                        <a href="{% url 'logout' %}">Cerrar sesión</a>
+                    </div>
+                </div>
+            {% else %}
+                <a href="{% url 'login' %}">Iniciar sesión</a> /
+                <a href="{% url 'register' %}">Registrarse</a>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- Mensaje de bienvenida -->
+    {% if mostrar_mensaje %}
+    <div class="inicio-mensaje">
+        ¡Inicia sesión o regístrate para disfrutar de todo lo que <strong>ShopNest</strong> tiene para ofrecerte!
+    </div>
+    {% endif %}
+
+    <!-- Contenido -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>ShopNest © 2025 - Todos los derechos reservados</p>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

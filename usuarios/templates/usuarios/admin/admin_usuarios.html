@@ -1,0 +1,29 @@
+{% extends 'base_admin.html' %}
+{% block title %}Usuarios Registrados{% endblock %}
+{% block content %}
+<h2>Lista de Usuarios</h2>
+<table border="1" cellpadding="8">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre de usuario</th>
+            <th>Email</th>
+            <th>Fecha de registro</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for u in usuarios %}
+        <tr>
+            <td>{{ u.id }}</td>
+            <td>{{ u.username }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.date_joined|date:"d/m/Y" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No hay usuarios registrados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

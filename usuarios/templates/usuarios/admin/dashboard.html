@@ -1,0 +1,15 @@
+{% extends 'base_admin.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h2>Bienvenido, {{ user.username }}</h2>
+    <p>Este es tu panel principal de administración.</p>
+
+    <section>
+        <h3>Resumen general</h3>
+        <ul>
+            <li>Total de usuarios: {{ total_usuarios }}</li>
+            <li>Usuarios activos: {{ usuarios_activos }}</li>
+        </ul>
+    </section>
+{% endblock %}

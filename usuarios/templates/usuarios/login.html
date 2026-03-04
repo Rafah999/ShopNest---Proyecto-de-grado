@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_class %}login-page{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Iniciar Sesión</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <label for="id_username">Usuario:</label>
+        {{ form.username }}
+
+        <label for="id_password">Contraseña:</label>
+        {{ form.password }}
+
+        <button type="submit">Entrar</button>
+    </form>
+
+    <p>¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a></p>
+</div>
+{% endblock %}

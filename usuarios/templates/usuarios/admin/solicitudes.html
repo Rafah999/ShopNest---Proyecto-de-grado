@@ -1,0 +1,44 @@
+{% extends "base_admin.html" %}
+{% load static %}
+{% block content %}
+<div class="admin-container">
+  <h1>Solicitudes de Emprendimiento</h1>
+
+  {% if pendientes %}
+    <div class="tabla-usuarios">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Usuario</th><th>Nombre Emprendimiento</th><th>Ciudad</th><th>Fecha</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in pendientes %}
+          <tr>
+            <td>{{ e.id }}</td>
+            <td>{{ e.usuario.username }} ({{ e.nombre_emprendedor }})</td>
+            <td>{{ e.nombre }}</td>
+            <td>{{ e.ciudad }}</td>
+            <td>{{ e.fecha_creacion }}</td>
+            <td>
+              <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="empr_id" value="{{ e.id }}">
+                <button name="action" value="aprobar" class="btn admin">Aprobar</button>
+              </form>
+              <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="empr_id" value="{{ e.id }}">
+                <button name="action" value="rechazar" class="btn eliminar">Rechazar</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>No hay solicitudes pendientes.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="registro-wrapper" style="max-width:700px; margin:50px auto; text-align:center;">
+    
+    <h1 style="color:#4a0e83; margin-bottom:20px;">¡Solicitud enviada!</h1>
+
+    <p style="font-size:18px; margin-bottom:30px;">
+        Gracias por registrar tu emprendimiento.<br><br>
+        En un plazo aproximado de <strong>48 horas</strong> recibirás una respuesta
+        en tu correo y en tu bandeja dentro de la plataforma.
+    </p>
+
+    <a href="{% url 'index' %}" class="btn-submit" 
+       style="padding:12px 30px; text-decoration:none; background:#4a0e83; color:white; border-radius:8px;">
+       Volver al inicio
+    </a>
+
+</div>
+{% endblock %}

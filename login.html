@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block body_class %}login-page{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2>Iniciar Sesión</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Ingresar</button>
+        </form>
+        <p>¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a></p>
+    </div>
+</div>
+{% endblock %}

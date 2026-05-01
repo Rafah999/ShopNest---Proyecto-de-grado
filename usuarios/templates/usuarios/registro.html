@@ -1,16 +1,82 @@
 {% extends "base.html" %}
-{% block body_class %}register-page{% endblock %}
+{% load static %}
+
+{% block body_class %}auth-page{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="form-container">
-        <h2>Registro</h2>
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Registrarse</button>
-        </form>
-        <p>¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>
+<div class="auth-wrapper">
+
+    <!-- IZQUIERDA -->
+    <div class="auth-left">
+        <div class="auth-box">
+            <h2>Registro</h2>
+            <p class="auth-sub">Crea tu cuenta</p>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <!-- 🔥 ERRORES CONTROLADOS -->
+                
+                {% if form.username.errors %}
+                    <div class="login-error">
+                        El nombre de usuario ya existe.
+                    </div>
+                {% endif %}
+
+                {% if form.email.errors %}
+                    <div class="login-error">
+                        El correo ya está registrado.
+                    </div>
+                {% endif %}
+
+                {% if form.password2.errors %}
+                    <div class="login-error">
+                        Las contraseñas no coinciden.
+                    </div>
+                {% endif %}
+
+                {% if form.password1.errors and not form.password2.errors %}
+                    <div class="login-error">
+                        La contraseña no cumple con los requisitos.
+                    </div>
+                {% endif %}
+
+                {% if form.errors and not form.username.errors and not form.email.errors and not form.password1.errors and not form.password2.errors %}
+                    <div class="login-error">
+                        Error en el formulario. Verifica los datos.
+                    </div>
+                {% endif %}
+
+                <!-- CAMPOS -->
+                <input type="text" name="username" placeholder="Usuario" required>
+                <input type="email" name="email" placeholder="Correo electrónico" required>
+                <input type="text" name="telefono" placeholder="Teléfono">
+
+                <input type="password" name="password1" placeholder="Contraseña" required>
+                <input type="password" name="password2" placeholder="Confirmar contraseña" required>
+
+                <button type="submit">Registrarse</button>
+            </form>
+
+            <p class="auth-link">
+                ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a>
+            </p>
+        </div>
     </div>
+
+    <!-- DERECHA -->
+    <div class="auth-right">
+        <div class="carousel">
+            <div class="slide active" style="background-image: url('{% static "img/ropa1.jpeg" %}');"></div>
+            <div class="slide" style="background-image: url('{% static "img/galletas.jpeg" %}');"></div>
+            <div class="slide" style="background-image: url('{% static "img/pasteles.jpeg" %}');"></div>
+        </div>
+
+        <div class="overlay">
+            <h1>Únete a ShopNest</h1>
+            <p>Empieza tu camino como emprendedor</p>
+        </div>
+    </div>
+
 </div>
 {% endblock %}

@@ -12,7 +12,8 @@ class CustomUser(AbstractUser):
     direccion = models.CharField(max_length=255, blank=True, null=True)
 
     is_admin_manual = models.BooleanField(default=False)
-
+    es_emprendedor = models.BooleanField(default=False)
+    vio_tutorial_emprendimiento = models.BooleanField(default=False)
     foto_perfil = models.ImageField(
         upload_to="perfiles/",
         blank=True,
@@ -52,6 +53,10 @@ class Emprendimiento(models.Model):
     metodo_pago = models.CharField(max_length=50)
     ubicacion = models.CharField(max_length=255, blank=True, null=True)
 
+    publicado = models.BooleanField(default=False)
+    personalizado = models.BooleanField(default=False)
+
+
     # Educación
     es_estudiante = models.BooleanField(default=False)
     institucion = models.CharField(max_length=150, blank=True, null=True)
@@ -85,3 +90,77 @@ class Emprendimiento(models.Model):
 
     def __str__(self):
         return f"{self.nombre} - {self.usuario.username}"
+
+
+class Notificacion(models.Model):
+
+    TIPOS = [
+        ("aprobado", "Aprobado"),
+        ("rechazado", "Rechazado"),
+        ("info", "Información"),
+    ]
+
+    ESTADOS = [
+        ("no_leido", "No leído"),
+        ("visto", "Visto"),
+    ]
+
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="notificaciones"
+    )
+
+    mensaje = models.TextField()
+
+    tipo = models.CharField(max_length=20, choices=TIPOS)
+    estado = models.CharField(max_length=20, choices=ESTADOS, default="no_leido")
+
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.usuario.username} - {self.tipo}"
+
+
+class EmprendimientoImagen(models.Model):
+    emprendimiento = models.ForeignKey(
+        Emprendimiento,
+        on_delete=models.CASCADE,
+        related_name="imagenes"
+    )
+
+    imagen = models.ImageField(upload_to="emprendimientos/galeria/")
+
+    orden = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"Imagen {self.id} - {self.emprendimiento.nombre}"
+    
+
+class Producto(models.Model):
+
+    CATEGORIAS = [
+        ("comida", "Comida"),
+        ("ropa", "Ropa"),
+        ("tecnologia", "Tecnología"),
+        ("hogar", "Hogar"),
+        ("otros", "Otros"),
+    ]
+
+    emprendimiento = models.ForeignKey(
+        Emprendimiento,
+        on_delete=models.CASCADE,
+        related_name="productos"
+    )
+
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField(blank=True, null=True)
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+
+    imagen = models.ImageField(upload_to="productos/")
+    categoria = models.CharField(max_length=50, choices=CATEGORIAS)
+
+    creado = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.nombre

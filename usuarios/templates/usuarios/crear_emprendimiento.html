@@ -82,7 +82,7 @@
                     {{ form.descripcion }}
                 </div>
             </div>
-
+            <br>
             <div class="fila-3">
                 <div class="campo">
                     <label>¿El emprendimiento es estático?</label>
@@ -106,54 +106,64 @@
                     {{ form.ubicacion }}
                 </div>
             </div>
-
-            <!-- 👇 CAMPO CIUDAD (CORRECCIÓN) -->
+            <br>
             <div class="fila-2">
                 <div class="campo">
                     <label>Ciudad</label>
                     {{ form.ciudad }}
                 </div>
             </div>
-
+            <br>
             <div class="fila-2">
                 <div class="campo">
                     <label>¿Eres estudiante?</label>
                     {{ form.es_estudiante }}
                 </div>
 
+                
+            </div>
+            <br>
+            <div class="fila-2">
                 <div class="campo">
                     <label>Institución educativa (si aplica)</label>
                     {{ form.institucion }}
                 </div>
             </div>
-
+            <br>
             <div class="fila-2">
                 <div class="campo">
                     <label>¿Vendes dentro de la institución?</label>
                     {{ form.vende_en_institucion }}
                 </div>
-
-                <div class="archivos">
-                    <div class="file-item">
-                        <label>Logo</label>
-                        {{ form.logo }}
-                    </div>
-
-                    <div class="file-item">
-                        <label>IGMS productos</label>
-                        {{ form.igms_productos }}
-                    </div>
-
-                    <div class="file-item">
-                        <label>Documento de identidad</label>
-                        {{ form.documento_identidad }}
-                    </div>
-                </div>
             </div>
 
         </div>
+        <!-- ======================= CARD ARCHIVOS ======================= -->
+        <div class="card-form">
 
-        <!-- ======================= CARD 3 ======================= -->
+            <h2 class="seccion-titulo">Archivos requeridos</h2>
+
+                <div class="archivos-list">
+
+                    <div class="archivo-row">
+                        <span>Logo</span>
+                        {{ form.logo }}
+                    </div>
+
+                    <div class="archivo-row">
+                        <span>IGMS productos</span>
+                        {{ form.igms_productos }}
+                    </div>
+
+                    <div class="archivo-row">
+                        <span>Documento de identidad</span>
+                        {{ form.documento_identidad }}
+                    </div>
+
+                </div>
+            
+        </div>
+        <!-- ======================= CARD 4 ======================= -->
         <div class="card-form">
 
             <div class="fila-2">
@@ -176,7 +186,7 @@
             </div>
 
             <p class="nota-final">
-                La solicitud quedará en revisión y será evaluada por el administrador.
+                La solicitud quedará en revisión y será evaluada por los administradores.
             </p>
 
         </div>

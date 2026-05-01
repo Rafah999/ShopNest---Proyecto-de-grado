@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="mi-emp-wrapper">
+
+    {% if emprendimiento %}
+
+    <div class="mi-emp-header">
+        <div>
+            <h1>{{ emprendimiento.nombre }}</h1>
+            
+        </div>
+
+        <button class="ayuda-btn" id="openAyuda">
+            Ayuda
+        </button>
+    </div>
+
+    <!-- INFO BASE -->
+    <div class="emp-card tutorial-step" id="stepInfo">
+        <h2>Información base</h2>
+
+        <div class="emp-grid">
+            <div>
+                <label>Emprendedor</label>
+                <p>{{ emprendimiento.nombre_emprendedor }} {{ emprendimiento.apellidos }}</p>
+            </div>
+
+            <div>
+                <label>Ciudad</label>
+                <p>{{ emprendimiento.ciudad }}</p>
+            </div>
+
+            <div>
+                <label>Tipo</label>
+                <p>{{ emprendimiento.tipo_emprendimiento }}</p>
+            </div>
+
+            <div>
+                <label>Ubicación</label>
+                <p>{{ emprendimiento.ubicacion }}</p>
+            </div>
+        </div>
+
+        <div class="descripcion-box">
+            <label>Descripción inicial</label>
+            <p>{{ emprendimiento.descripcion }}</p>
+        </div>
+    </div>
+
+    <!-- LOGO -->
+    <div class="emp-card tutorial-step" id="stepLogo">
+        <h2>Logo del emprendimiento</h2>
+
+        {% if emprendimiento.logo %}
+            <img src="{{ emprendimiento.logo.url }}" class="logo-preview">
+        {% else %}
+            <div class="empty-box">
+                Aún no has subido un logo.
+            </div>
+        {% endif %}
+
+        <br>
+
+        <button class="config-btn">
+            Cambiar logo
+        </button>
+    </div>
+
+    <!-- CARRUSEL -->
+    <div class="emp-card tutorial-step" id="stepCarrusel">
+        <h2>Imágenes principales</h2>
+
+        <p>
+            Sube hasta 5 imágenes para mostrar tu emprendimiento.
+        </p>
+
+        <div class="empty-box">
+            Aquí aparecerán tus imágenes del carrusel.
+        </div>
+
+        <br>
+
+        <button class="config-btn">
+            Agregar imágenes
+        </button>
+    </div>
+
+    <!-- PRODUCTOS -->
+    <div class="emp-card tutorial-step" id="stepProductos">
+        <h2>Productos</h2>
+
+        <p>
+            Debes registrar mínimo 3 productos antes de publicar.
+        </p>
+
+        <div class="empty-box">
+            Aún no tienes productos registrados.
+        </div>
+
+        <br>
+
+        <button class="config-btn">
+            Registrar producto
+        </button>
+    </div>
+
+    <!-- PUBLICAR -->
+    <div class="publicar-box tutorial-step" id="stepPublicar">
+
+        <button class="publicar-btn" disabled>
+            Publicar mi emprendimiento
+        </button>
+
+        <br>
+
+        <p>
+            Debes completar logo, imágenes y mínimo 3 productos.
+        </p>
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-main">
+        <h2>No tienes emprendimiento aprobado aún</h2>
+        <p>Primero espera aprobación para comenzar.</p>
+    </div>
+
+    {% endif %}
+
+</div>
+
+<!-- =========================
+     MODAL AYUDA
+========================= -->
+<div class="ayuda-modal" id="ayudaModal">
+
+    <div class="ayuda-content">
+
+        <div class="ayuda-header">
+            <h3>Centro de ayuda</h3>
+            <span id="closeAyuda">&times;</span>
+        </div>
+
+        <div class="ayuda-body">
+
+            <p>
+                <strong>Información base:</strong>
+                revisa los datos principales de tu emprendimiento.
+            </p>
+
+            <br>
+
+            <p>
+                <strong>Logo:</strong>
+                agrega la imagen principal de tu negocio.
+            </p>
+
+            <br>
+
+            <p>
+                <strong>Carrusel:</strong>
+                puedes subir hasta 5 imágenes destacadas.
+            </p>
+
+            <br>
+
+            <p>
+                <strong>Productos:</strong>
+                debes registrar mínimo 3 productos.
+            </p>
+
+            <br>
+
+            <p>
+                <strong>Publicar:</strong>
+                solo podrás publicar cuando completes todos los requisitos.
+            </p>
+
+            <div class="tutorial-help-box" style="margin-top: 25px; text-align:center;">
+
+                <button
+                    type="button"
+                    class="tutorial-help-btn"
+                    id="openTutorialManual"
+                    style="
+                        background: linear-gradient(135deg, #7c3aed, #9333ea);
+                        color: white;
+                        border: none;
+                        padding: 14px 22px;
+                        border-radius: 12px;
+                        cursor: pointer;
+                        font-weight: bold;
+                        width: 100%;
+                    "
+                >
+                    Ver tutorial guiado
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================
+     TUTORIAL GUIADO
+========================= -->
+<div class="tutorial-overlay {% if mostrar_tutorial %}active{% endif %}" id="tutorialOverlay">
+
+    <div class="tutorial-tooltip" id="tutorialTooltip">
+
+        <h3>Guía de inicio</h3>
+
+        <p id="tutorialText"></p>
+
+        <div class="tutorial-actions">
+            <button type="button" id="nextTutorial">
+                Siguiente
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

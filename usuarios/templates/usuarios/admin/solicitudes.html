@@ -1,5 +1,6 @@
 {% extends "base_admin.html" %}
 {% load static %}
+
 {% block content %}
 <div class="admin-container">
   <h1>Solicitudes de Emprendimiento</h1>
@@ -9,29 +10,54 @@
       <table>
         <thead>
           <tr>
-            <th>ID</th><th>Usuario</th><th>Nombre Emprendimiento</th><th>Ciudad</th><th>Fecha</th><th>Acciones</th>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Ciudad</th>
+            <th>Fecha</th>
+            <th>PDF</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {% for e in pendientes %}
           <tr>
-            <td>{{ e.id }}</td>
-            <td>{{ e.usuario.username }} ({{ e.nombre_emprendedor }})</td>
-            <td>{{ e.nombre }}</td>
+            <td>SOL-{{ e.id|stringformat:"05d" }}</td>
+
+            <td>
+              {{ e.usuario.username }} <br>
+              <small>{{ e.nombre_emprendedor }}</small>
+            </td>
+
             <td>{{ e.ciudad }}</td>
-            <td>{{ e.fecha_creacion }}</td>
+
+            <td>{{ e.fecha_envio|date:"d/m/Y H:i" }}</td>
+
+            <!-- PDF -->
+            <td>
+              <a href="{% url 'descargar_pdf' e.id %}" class="btn-pdf">
+                📄 PDF
+              </a>
+            </td>
+
+            <!-- ACCIONES -->
             <td>
               <form method="post" style="display:inline;">
                 {% csrf_token %}
                 <input type="hidden" name="empr_id" value="{{ e.id }}">
-                <button name="action" value="aprobar" class="btn admin">Aprobar</button>
+                <button name="action" value="aprobar" class="btn admin">
+                  Aprobar
+                </button>
               </form>
+
               <form method="post" style="display:inline;">
                 {% csrf_token %}
                 <input type="hidden" name="empr_id" value="{{ e.id }}">
-                <button name="action" value="rechazar" class="btn eliminar">Rechazar</button>
+                <button name="action" value="rechazar" class="btn eliminar">
+                  Rechazar
+                </button>
               </form>
             </td>
+
           </tr>
           {% endfor %}
         </tbody>

@@ -18,5 +18,7 @@ urlpatterns = [
     path("administracion/solicitudes/", views.solicitudes, name="solicitudes"),
     path("crear-emprendimiento/", views.crear_emprendimiento, name="crear_emprendimiento"),
     path("solicitud-enviada/", views.solicitud_enviada, name="solicitud_enviada"),
-
+    path('mi-emprendimiento/', views.mi_emprendimiento, name='mi_emprendimiento'),
+    path("api/notificaciones/", views.obtener_notificaciones, name="obtener_notificaciones"),
+    path("api/notificaciones/marcar/", views.marcar_notificaciones_vistas, name="marcar_notificaciones"),
 ]

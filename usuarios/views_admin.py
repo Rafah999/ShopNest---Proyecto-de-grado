@@ -2,6 +2,13 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from .models import Emprendimiento
+
+
+
 
 User = get_user_model()  # apunta correctamente al CustomUser
 
@@ -72,3 +79,67 @@ def usuarios_list(request):
     # GET: mostrar la lista
     return render(request, 'usuarios/admin/usuarios_list.html', {'usuarios': usuarios})
 
+@login_required
+@user_passes_test(es_admin)
+def descargar_emprendimiento_pdf(request, emp_id):
+    try:
+        emp = Emprendimiento.objects.get(id=emp_id)
+    except Emprendimiento.DoesNotExist:
+        messages.error(request, "Emprendimiento no encontrado.")
+        return redirect("solicitudes")
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="emprendimiento_{emp.id}.pdf"'
+
+    doc = SimpleDocTemplate(response)
+    styles = getSampleStyleSheet()
+
+    content = []
+
+    # ===== TÍTULO =====
+    content.append(Paragraph("Solicitud de Emprendimiento", styles['Title']))
+    content.append(Spacer(1, 15))
+
+    # ===== DATOS PERSONALES =====
+    content.append(Paragraph("<b>Datos del Emprendedor</b>", styles['Heading2']))
+    content.append(Spacer(1, 10))
+
+    content.append(Paragraph(f"Nombre: {emp.nombre_emprendedor} {emp.apellidos}", styles['Normal']))
+    content.append(Paragraph(f"Documento: {emp.tipo_documento} - {emp.numero_documento}", styles['Normal']))
+    content.append(Paragraph(f"Fecha nacimiento: {emp.fecha_nacimiento}", styles['Normal']))
+
+    content.append(Spacer(1, 15))
+
+    # ===== EMPRENDIMIENTO =====
+    content.append(Paragraph("<b>Información del Emprendimiento</b>", styles['Heading2']))
+    content.append(Spacer(1, 10))
+
+    content.append(Paragraph(f"Nombre: {emp.nombre}", styles['Normal']))
+    content.append(Paragraph(f"Tipo: {emp.tipo_emprendimiento}", styles['Normal']))
+    content.append(Paragraph(f"Descripción: {emp.descripcion}", styles['Normal']))
+    content.append(Paragraph(f"Ubicación: {emp.ubicacion}", styles['Normal']))
+    content.append(Paragraph(f"Ciudad: {emp.ciudad}", styles['Normal']))
+
+    content.append(Spacer(1, 15))
+
+    # ===== DETALLES =====
+    content.append(Paragraph("<b>Detalles adicionales</b>", styles['Heading2']))
+    content.append(Spacer(1, 10))
+
+    content.append(Paragraph(f"Estático: {'Sí' if emp.es_estatico else 'No'}", styles['Normal']))
+    content.append(Paragraph(f"Domicilio: {'Sí' if emp.tiene_domicilio else 'No'}", styles['Normal']))
+    content.append(Paragraph(f"Método de pago: {emp.metodo_pago}", styles['Normal']))
+
+    content.append(Spacer(1, 15))
+
+    # ===== EDUCACIÓN =====
+    content.append(Paragraph("<b>Educación</b>", styles['Heading2']))
+    content.append(Spacer(1, 10))
+
+    content.append(Paragraph(f"Estudiante: {'Sí' if emp.es_estudiante else 'No'}", styles['Normal']))
+    content.append(Paragraph(f"Institución: {emp.institucion or 'N/A'}", styles['Normal']))
+    content.append(Paragraph(f"Vende en institución: {'Sí' if emp.vende_en_institucion else 'No'}", styles['Normal']))
+
+    doc.build(content)
+
+    return response

@@ -1,25 +1,54 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block body_class %}login-page{% endblock %}
+{% block body_class %}auth-page{% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <h2>Iniciar Sesión</h2>
+<div class="auth-wrapper">
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
+    <!-- IZQUIERDA -->
+    <div class="auth-left">
+        <div class="auth-box">
+            <h2>Iniciar Sesión</h2>
+            <p class="auth-sub">Ingresa tus datos</p>
 
-        <label for="id_username">Usuario:</label>
-        {{ form.username }}
+            <form method="POST">
+                {% csrf_token %}
 
-        <label for="id_password">Contraseña:</label>
-        {{ form.password }}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="login-error">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
 
-        <button type="submit">Entrar</button>
-    </form>
+                <label>Usuario</label>
+                {{ form.username }}
 
-    <p>¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a></p>
+                <label>Contraseña</label>
+                {{ form.password }}
+
+                <button type="submit">Entrar</button>
+            </form>
+
+            <p class="auth-link">
+                ¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- DERECHA -->
+    <div class="auth-right">
+        <div class="carousel">
+            <div class="slide active" style="background-image: url('{% static "img/ropa1.jpeg" %}');"></div>
+            <div class="slide" style="background-image: url('{% static "img/galletas.jpeg" %}');"></div>
+            <div class="slide" style="background-image: url('{% static "img/pasteles.jpeg" %}');"></div>
+        </div>
+
+        <div class="overlay">
+            <h1>Impulsa tu emprendimiento</h1>
+            <p>Conecta, vende y crece con ShopNest</p>
+        </div>
+    </div>
+
 </div>
 {% endblock %}

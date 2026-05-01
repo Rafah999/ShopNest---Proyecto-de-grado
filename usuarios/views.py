@@ -1,10 +1,14 @@
+from pyexpat.errors import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth import get_user_model
-
+from django.contrib.auth import get_user_model, authenticate, login
+from usuarios.models import CustomUser
+from django.contrib import messages
 from .forms import RegistroForm, LoginForm, EmprendimientoForm, FotoPerfilForm
-from .models import Emprendimiento
+from .models import Emprendimiento, Notificacion
+from django.http import JsonResponse
+
 
 User = get_user_model()  # Modelo de usuario personalizado
 
@@ -28,6 +32,8 @@ def registro(request):
             if user.is_superuser or user.is_staff or getattr(user, 'is_admin_manual', False):
                 return redirect("admin_dashboard")
             return redirect("index")
+        else:
+            print(form.errors)  # 🔥 ESTO ES CLAVE
     else:
         form = RegistroForm()
 
@@ -41,6 +47,7 @@ def registro(request):
 def user_login(request):
     if request.method == "POST":
         form = LoginForm(request, data=request.POST)
+
         if form.is_valid():
             user = form.get_user()
             login(request, user)
@@ -48,6 +55,10 @@ def user_login(request):
             if user.is_superuser or user.is_staff or getattr(user, 'is_admin_manual', False):
                 return redirect("admin_dashboard")
             return redirect("index")
+
+        else:
+            messages.error(request, "Usuario o contraseña incorrectos.")
+
     else:
         form = LoginForm()
 
@@ -55,7 +66,6 @@ def user_login(request):
         "form": form,
         "body_class": "login-page"
     })
-
 
 # --- Logout ---
 def user_logout(request):
@@ -74,11 +84,14 @@ def perfil(request):
     else:
         form = FotoPerfilForm(instance=request.user)
 
+    # 🔥 OBTENER EMPRENDIMIENTO DEL USUARIO
+    emprendimiento = Emprendimiento.objects.filter(usuario=request.user).order_by("-id").first()
+
     return render(request, "usuarios/perfil.html", {
         "usuario": request.user,
-        "form": form
+        "form": form,
+        "emprendimiento": emprendimiento
     })
-
 
 # --- Verificar si es admin ---
 def es_admin(user):
@@ -138,17 +151,37 @@ def solicitudes(request):
             e = Emprendimiento.objects.get(id=emp_id)
             if action == "aprobar":
                 e.estado = "aprobado"
+
+                Notificacion.objects.create(
+                    usuario=e.usuario,
+                    mensaje=f"¡Tu emprendimiento '{e.nombre}' ha sido aprobado!",
+                    tipo="aprobado"
+                )
+
+                e.usuario.es_emprendedor = True
+                e.usuario.save()
                 e.save()
+
+
             elif action == "rechazar":
                 e.estado = "rechazado"
                 e.save()
+
+                Notificacion.objects.create(
+                    usuario=e.usuario,
+                    mensaje=f"Lo sentimos, tu emprendimiento '{e.nombre}' ha sido rechazado.",
+                    tipo="rechazado"
+                )
+
         except Emprendimiento.DoesNotExist:
             pass
 
         return redirect("solicitudes")
 
-    pendientes = Emprendimiento.objects.filter(estado="pendiente").order_by("-id")
+    pendientes = Emprendimiento.objects.filter(estado="revision").order_by("-id")
     return render(request, "usuarios/admin/solicitudes.html", {"pendientes": pendientes})
+
+
 
 
 # --- Crear emprendimiento ---
@@ -173,3 +206,48 @@ def crear_emprendimiento(request):
 @login_required
 def solicitud_enviada(request):
     return render(request, "usuarios/solicitud_enviada.html")
+
+
+@login_required
+def mi_emprendimiento(request):
+    try:
+        emprendimiento = Emprendimiento.objects.get(
+            usuario=request.user,
+            estado="aprobado"
+        )
+    except Emprendimiento.DoesNotExist:
+        emprendimiento = None
+
+    mostrar_tutorial = False
+
+    if request.user.is_authenticated and not request.user.vio_tutorial_emprendimiento:
+        mostrar_tutorial = True
+        request.user.vio_tutorial_emprendimiento = True
+        request.user.save()
+
+    return render(request, "usuarios/mi_emprendimiento.html", {
+        "emprendimiento": emprendimiento,
+        "mostrar_tutorial": mostrar_tutorial,
+    })
+
+
+@login_required
+def obtener_notificaciones(request):
+    notificaciones = request.user.notificaciones.all().order_by("-fecha")
+
+    data = []
+
+    for n in notificaciones:
+        data.append({
+            "id": n.id,
+            "mensaje": n.mensaje,
+            "estado": n.estado,
+            "fecha": n.fecha.strftime("%d/%m/%Y %H:%M")
+        })
+
+    return JsonResponse(data, safe=False)
+
+@login_required
+def marcar_notificaciones_vistas(request):
+    request.user.notificaciones.filter(estado="no_leido").update(estado="visto")
+    return JsonResponse({"ok": True})

@@ -5,73 +5,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShopNest</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
 
-    <style>
-        /* === ESTILO DEL CUADRO DE MENSAJE DE INICIO === */
-        .inicio-mensaje {
-            background: rgba(150, 140, 150, 0.85);
-            color: #000;
-            text-align: center;
-            font-weight: bold;
-            font-size: 16px;
-            margin: 20px auto;
-            padding: 15px 25px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 800px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-        .inicio-mensaje strong {
-            color: #4a0e83;
-        }
-    </style>
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 </head>
 
-<body class="{% if body_class %}{{ body_class }}{% endif %}">
+<body class="{% block body_class %}{% endblock %}">
 
-    <!-- Navbar -->
+    <!-- NAVBAR -->
     <div class="navbar">
         <a href="{% url 'index' %}" class="brand">ShopNest</a>
+
         <div class="nav-right">
-
             {% if user.is_authenticated %}
-                <div class="user-menu">
-                    <div class="user-circle" id="userCircle">
-                        {{ user.username|first|upper }}
-                    </div>
-
-                    <div class="user-dropdown" id="userDropdown">
-                        <a href="{% url 'perfil' %}">Perfil</a>
-
-                        {% if user.is_superuser or user.is_staff or user.is_admin_manual %}
-                            <a href="{% url 'admin_dashboard' %}">Admin Panel</a>
-                        {% endif %}
-
-                        <a href="{% url 'logout' %}">Cerrar sesión</a>
-                    </div>
+                <div class="user-circle" id="openDrawer">
+                    {{ user.username|first|upper }}
                 </div>
             {% else %}
                 <a href="{% url 'login' %}">Iniciar sesión</a> /
                 <a href="{% url 'register' %}">Registrarse</a>
             {% endif %}
+        </div>
+    </div>
+
+    {% if user.is_authenticated %}
+    <!-- DRAWER -->
+    <div class="drawer" id="drawer">
+        <div class="drawer-content">
+
+            <div class="drawer-header">
+                <h3>Menú</h3>
+                <span id="closeDrawer">&times;</span>
+            </div>
+
+            <div class="drawer-body">
+                <a href="{% url 'perfil' %}">Perfil</a>
+
+                <a href="javascript:void(0);" id="openNotiDrawer" class="noti-link">
+                    Notificaciones
+                    <span class="noti-count drawer-count" id="notiCount">0</span>
+                </a>
+
+                {% if user.es_emprendedor %}
+                    <a href="{% url 'mi_emprendimiento' %}">Mi Emprendimiento</a>
+                {% endif %}
+
+                {% if user.is_superuser or user.is_staff or user.is_admin_manual %}
+                    <a href="{% url 'admin_dashboard' %}">Admin Panel</a>
+                {% endif %}
+
+                <a href="{% url 'logout' %}">Cerrar sesión</a>
+            </div>
 
         </div>
     </div>
 
-    <!-- Mensaje de bienvenida -->
-    {% if mostrar_mensaje %}
-    <div class="inicio-mensaje">
-        ¡Inicia sesión o regístrate para disfrutar de todo lo que <strong>ShopNest</strong> tiene para ofrecerte!
+    <!-- OVERLAY DRAWER -->
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+
+    <!-- MODAL NOTIFICACIONES -->
+    <div class="noti-modal" id="notiModal">
+        <div class="noti-content">
+            <div class="noti-header">
+                <h3>Notificaciones</h3>
+                <span id="closeNoti">&times;</span>
+            </div>
+
+            <div class="noti-body" id="notiList">
+                <p>Cargando...</p>
+            </div>
+        </div>
     </div>
     {% endif %}
 
-    <!-- Contenido -->
+    <!-- CONTENIDO -->
     <main>
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
+    <!-- FOOTER -->
     <footer>
         <p>ShopNest © 2025 - Todos los derechos reservados</p>
     </footer>

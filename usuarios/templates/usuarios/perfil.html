@@ -4,7 +4,10 @@
 {% block content %}
 <div class="perfil-wrapper">
 
+    <!-- TARJETA PRINCIPAL -->
     <div class="perfil-card">
+
+        <!-- IZQUIERDA -->
         <div class="perfil-info">
             <h2>Perfil Personal</h2>
 
@@ -24,9 +27,9 @@
             </div>
         </div>
 
+        <!-- DERECHA -->
         <div class="perfil-foto">
 
-            <!-- CONTENEDOR FIJO -->
             <div class="foto-circulo">
                 {% if user.foto_perfil %}
                     <img src="{{ user.foto_perfil.url }}" id="previewFoto">
@@ -39,32 +42,55 @@
                 {% csrf_token %}
 
                 <input type="file"
-                       name="foto_perfil"
-                       id="id_foto_perfil"
-                       accept="image/*"
-                       hidden
-                       onchange="previewImage(event)">
+                    name="foto_perfil"
+                    id="id_foto_perfil"
+                    accept="image/*"
+                    hidden
+                    onchange="previewImage(event)">
 
                 <label for="id_foto_perfil" class="editar-btn">
                     Cambiar foto
                 </label>
 
-                <button type="submit" class="editar-btn guardar-btn">
-                    Guardar
+                <!-- 🔥 BOTÓN OCULTO -->
+                <button type="submit"
+                        id="btnGuardar"
+                        class="editar-btn guardar-btn hidden">
+                    Guardar cambios
                 </button>
             </form>
         </div>
     </div>
 
+    <!-- BOTÓN EMPRENDIMIENTO -->
+    <!-- ESTADO DEL EMPRENDIMIENTO -->
     <div class="emprendimiento-box">
-        <h3>Registrar Emprendimiento</h3>
-        <a href="{% url 'crear_emprendimiento' %}">
-            <button class="registrar-btn">Registrar</button>
-        </a>
-    </div>
 
-    <div class="cerrar-box">
-        <a href="{% url 'logout' %}" class="cerrar-sesion-btn">Cerrar Sesión</a>
+        {% if not emprendimiento %}
+            <h3>Registrar Emprendimiento</h3>
+            <a href="{% url 'crear_emprendimiento' %}">
+                <button class="registrar-btn">Registrar</button>
+            </a>
+
+        {% elif emprendimiento.estado == "revision" %}
+            <h3>Estado de solicitud</h3>
+            <p class="estado-texto">⏳ En espera de una respuesta</p>
+
+        {% elif emprendimiento.estado == "aprobado" %}
+            <h3>Mi emprendimiento</h3>
+            <a href="{% url 'mi_emprendimiento' %}">
+                <button class="registrar-btn aprobado-btn">Ir a mi emprendimiento</button>
+            </a>
+
+        {% elif emprendimiento.estado == "rechazado" %}
+            <h3>Solicitud rechazada</h3>
+            <p class="estado-texto rechazado">❌ Tu solicitud fue rechazada</p>
+
+            <a href="{% url 'crear_emprendimiento' %}">
+                <button class="registrar-btn">Intentar nuevamente</button>
+            </a>
+        {% endif %}
+
     </div>
 
 </div>
@@ -72,7 +98,16 @@
 <script>
 function previewImage(event) {
     const img = document.getElementById('previewFoto');
-    img.src = URL.createObjectURL(event.target.files[0]);
+    const btnGuardar = document.getElementById('btnGuardar');
+
+    const file = event.target.files[0];
+
+    if (file) {
+        img.src = URL.createObjectURL(file);
+
+        // 🔥 mostrar botón guardar SOLO si hay imagen nueva
+        btnGuardar.classList.remove('hidden');
+    }
 }
 </script>
 {% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width:800px; margin:40px auto;">
+
+    <h2>Notificaciones</h2>
+
+    {% if notificaciones %}
+        {% for n in notificaciones %}
+            <div style="
+                padding:15px;
+                margin-bottom:10px;
+                border-radius:8px;
+                background: {% if n.estado == 'no_leido' %}#f3e5f5{% else %}#f5f5f5{% endif %};
+                border-left: 5px solid 
+                {% if n.tipo == 'aprobado' %}#4caf50
+                {% elif n.tipo == 'rechazado' %}#e53935
+                {% else %}#8e24aa{% endif %};
+            ">
+                <p>{{ n.mensaje }}</p>
+                <small>{{ n.fecha|date:"d/m/Y H:i" }}</small>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No tienes notificaciones.</p>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -3,61 +3,178 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Panel Admin{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        /* RESET */
+        * {
             margin: 0;
-            background-color: #f5f5f5;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
-        header {
-            background-color: #222;
-            color: white;
-            padding: 15px;
-            text-align: center;
+
+        body {
+            display: flex;
+            background: #f4f4f9;
         }
-        nav {
-            background-color: #333;
-            width: 200px;
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 240px;
             height: 100vh;
+            background: linear-gradient(180deg, #6a1b9a, #8e24aa);
+            color: white;
             position: fixed;
-            top: 0;
             left: 0;
+            top: 0;
             padding-top: 20px;
         }
-        nav a {
-            color: white;
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar a {
             display: block;
-            padding: 10px 15px;
+            padding: 12px 20px;
+            color: white;
             text-decoration: none;
+            transition: 0.3s;
         }
-        nav a:hover {
-            background-color: #555;
+
+        .sidebar a:hover {
+            background: rgba(255,255,255,0.15);
         }
-        main {
-            margin-left: 220px;
+
+        /* CONTENIDO */
+        .main-content {
+            margin-left: 240px;
+            padding: 30px;
+            width: 100%;
+        }
+
+        /* TITULOS */
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        /* TABLA */
+        .tabla-usuarios {
+            background: white;
+            border-radius: 10px;
             padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #6a1b9a;
+            color: white;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        /* ROLES */
+        .rol {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .rol.admin {
+            background: #ffd54f;
+        }
+
+        .rol.user {
+            background: #90caf9;
+        }
+
+        /* BOTONES */
+        .btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 2px;
+        }
+
+        .btn.eliminar {
+            background: #e53935;
+            color: white;
+        }
+
+        .btn.admin {
+            background: #43a047;
+            color: white;
+        }
+
+        .btn.quitar-admin {
+            background: #fb8c00;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        /* MENSAJES */
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+
+        .alert.success {
+            background: #c8e6c9;
+        }
+
+        .alert.error {
+            background: #ffcdd2;
         }
     </style>
 </head>
+
 <body>
-    <header>
-        <h1>Panel del Administrador</h1>
-    </header>
 
-    <nav>
-        <a href="{% url 'dashboard' %}">🏠 Inicio</a>
-        <a href="{% url 'usuarios_list' %}">👥 Usuarios</a>
-        <li><a href="{% url 'solicitudes' %}">📥 Solicitudes</a></li>
-        <a href="#">📊 Reportes</a>
-        <a href="#">⚙️ Configuración</a>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>Admin</h2>
+
+        <!-- 🔥 NUEVO: Dashboard -->
+        <a href="{% url 'admin_dashboard' %}">📊 Dashboard</a>
+
+        <!-- 🔥 NUEVO: Perfil directo -->
+        <a href="{% url 'perfil' %}">👤 Mi Perfil</a>
+
+        <hr style="margin:15px 0; border:0; height:1px; background:rgba(255,255,255,0.2);">
+
+        <a href="{% url 'lista_usuarios' %}">👥 Usuarios</a>
+        <a href="{% url 'solicitudes' %}">📥 Solicitudes</a>
+
+        <hr style="margin:15px 0; border:0; height:1px; background:rgba(255,255,255,0.2);">
+
+        <a href="{% url 'index' %}">🏠 Ver sitio</a>
         <a href="{% url 'logout' %}">🚪 Cerrar sesión</a>
-    </nav>
-
-    <main>
+    </div>
+    <!-- CONTENIDO -->
+    <div class="main-content">
         {% block content %}{% endblock %}
-    </main>
+    </div>
+
 </body>
 </html>

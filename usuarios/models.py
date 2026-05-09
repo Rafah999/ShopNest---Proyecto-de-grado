@@ -159,6 +159,11 @@ class Producto(models.Model):
 
     imagen = models.ImageField(upload_to="productos/")
     categoria = models.CharField(max_length=50, choices=CATEGORIAS)
+    stock = models.PositiveIntegerField(default=0)
+
+    visible = models.BooleanField(default=True)
+
+    disponible = models.BooleanField(default=True)
 
     creado = models.DateTimeField(auto_now_add=True)
 

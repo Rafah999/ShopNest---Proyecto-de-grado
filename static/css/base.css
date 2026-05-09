@@ -1263,3 +1263,264 @@ footer {
     transform: translateY(-2px);
     box-shadow: 0 8px 18px rgba(124, 58, 237, 0.25);
 }
+/* =========================
+   LAYOUT GENERAL
+========================= */
+
+.section-header{
+    margin-bottom:20px;
+}
+
+.productos-layout{
+    width:100%;
+}
+
+.productos-grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    margin-bottom:20px;
+}
+
+/* =========================
+   PRODUCTOS
+========================= */
+
+.producto-card-custom{
+    width:180px;
+    background:#fff;
+    border:1px solid #d8d8d8;
+    border-radius:14px;
+    overflow:hidden;
+    padding:12px;
+}
+
+.producto-img-box{
+    width:100%;
+    height:120px;
+    background:#ddd;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    margin-bottom:10px;
+}
+
+.producto-img-box img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.producto-content h4{
+    margin:0;
+    font-size:15px;
+    font-weight:700;
+}
+
+.producto-content strong{
+    display:block;
+    margin-top:8px;
+    font-size:14px;
+}
+
+.producto-content p{
+    font-size:13px;
+    margin-top:5px;
+    color:#444;
+}
+
+.add-product-btn{
+    margin-top:10px;
+}
+
+/* =========================
+   LOGO
+========================= */
+
+.logo-upload-box{
+    width:100%;
+    max-width:330px;
+    height:140px;
+    border:1px solid #bdbdbd;
+    border-radius:12px;
+    background:#ececec;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    cursor:pointer;
+}
+
+.logo-placeholder{
+    font-weight:700;
+    text-align:center;
+}
+
+.logo-preview{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* =========================
+   IMAGENES
+========================= */
+
+.imagenes-grid-custom{
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+    margin-top:25px;
+}
+
+.img-card-custom{
+    width:120px;
+    height:120px;
+    border-radius:10px;
+    overflow:hidden;
+    background:#ddd;
+}
+
+.img-card-custom img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.mini-upload-box{
+    width:120px;
+    height:120px;
+    border:1px solid #aaa;
+    border-radius:10px;
+    background:#e7e7e7;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    cursor:pointer;
+    padding:10px;
+    font-weight:700;
+}
+
+.extra-img-btn{
+    margin-top:20px;
+}
+
+/* =========================
+   PUBLICAR
+========================= */
+
+.publicar-container{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    margin-top:40px;
+}
+
+.publicar-btn{
+    min-width:300px;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.producto-modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.70);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:99999;
+}
+
+.producto-modal.active{
+    display:flex;
+}
+
+.producto-modal-content{
+    width:420px;
+    background:#f2f2f2;
+    border-radius:12px;
+    padding:28px;
+}
+
+.producto-modal-content h3{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.campo-modal{
+    margin-bottom:18px;
+}
+
+.campo-modal label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:700;
+    font-size:14px;
+}
+
+.campo-modal input,
+.campo-modal textarea,
+.campo-modal select{
+    width:100%;
+    border:1px solid #c7c7c7;
+    border-radius:8px;
+    padding:10px;
+    background:white;
+}
+
+.campo-modal textarea{
+    height:90px;
+    resize:none;
+}
+
+.image-preview-modal{
+    width:100%;
+    height:120px;
+    background:white;
+    border:1px solid #ccc;
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:12px;
+    font-weight:700;
+    text-align:center;
+}
+
+.modal-save-btn{
+    width:100%;
+    margin-top:15px;
+}
+
+.upload-product-img{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+}
+
+.upload-product-img span{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    height:100%;
+    font-weight:600;
+    color:#444;
+}
+
+.upload-product-img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:12px;
+}

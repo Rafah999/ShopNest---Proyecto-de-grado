@@ -10,7 +10,6 @@
     <div class="mi-emp-header">
         <div>
             <h1>{{ emprendimiento.nombre }}</h1>
-            
         </div>
 
         <button class="ayuda-btn" id="openAyuda">
@@ -18,11 +17,13 @@
         </button>
     </div>
 
-    <!-- INFO BASE -->
+    <!-- INFO -->
     <div class="emp-card tutorial-step" id="stepInfo">
+
         <h2>Información base</h2>
 
         <div class="emp-grid">
+
             <div>
                 <label>Emprendedor</label>
                 <p>{{ emprendimiento.nombre_emprendedor }} {{ emprendimiento.apellidos }}</p>
@@ -42,191 +43,366 @@
                 <label>Ubicación</label>
                 <p>{{ emprendimiento.ubicacion }}</p>
             </div>
+
         </div>
 
         <div class="descripcion-box">
             <label>Descripción inicial</label>
             <p>{{ emprendimiento.descripcion }}</p>
         </div>
-    </div>
 
-    <!-- LOGO -->
-    <div class="emp-card tutorial-step" id="stepLogo">
-        <h2>Logo del emprendimiento</h2>
-
-        {% if emprendimiento.logo %}
-            <img src="{{ emprendimiento.logo.url }}" class="logo-preview">
-        {% else %}
-            <div class="empty-box">
-                Aún no has subido un logo.
-            </div>
-        {% endif %}
-
-        <br>
-
-        <button class="config-btn">
-            Cambiar logo
-        </button>
-    </div>
-
-    <!-- CARRUSEL -->
-    <div class="emp-card tutorial-step" id="stepCarrusel">
-        <h2>Imágenes principales</h2>
-
-        <p>
-            Sube hasta 5 imágenes para mostrar tu emprendimiento.
-        </p>
-
-        <div class="empty-box">
-            Aquí aparecerán tus imágenes del carrusel.
-        </div>
-
-        <br>
-
-        <button class="config-btn">
-            Agregar imágenes
-        </button>
     </div>
 
     <!-- PRODUCTOS -->
-    <div class="emp-card tutorial-step" id="stepProductos">
-        <h2>Productos</h2>
+    <div class="emp-card tutorial-step">
 
-        <p>
-            Debes registrar mínimo 3 productos antes de publicar.
-        </p>
+        <div class="section-header">
 
-        <div class="empty-box">
-            Aún no tienes productos registrados.
+            <div>
+                <h2>Registrar Productos</h2>
+            </div>
+
         </div>
 
-        <br>
+        <div class="productos-layout">
 
-        <button class="config-btn">
-            Registrar producto
+            <div class="productos-grid">
+
+                {% for producto in emprendimiento.productos.all %}
+
+                <div class="producto-card-custom">
+
+                    <div class="producto-img-box">
+
+                        {% if producto.imagen %}
+                            <img src="{{ producto.imagen.url }}">
+                        {% else %}
+                            <span>(IMG)</span>
+                        {% endif %}
+
+                    </div>
+
+                    <div class="producto-content">
+
+                        <h4>{{ producto.nombre }}</h4>
+
+                        <strong>${{ producto.precio }}</strong>
+
+                        <p>{{ producto.descripcion }}</p>
+
+                    </div>
+
+                </div>
+
+                {% empty %}
+
+                <div class="empty-productos">
+                    Aún no has registrado productos.
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            class="config-btn add-product-btn"
+            onclick="openProductoModal()"
+        >
+            Registrar un producto
         </button>
+
+    </div>
+
+    <!-- LOGO -->
+    <div class="emp-card tutorial-step">
+
+        <h2>Subir logo</h2>
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+            id="logoForm"
+        >
+
+            {% csrf_token %}
+
+            <input type="hidden" name="tipo" value="logo">
+
+            <label class="logo-upload-box">
+
+                {% if emprendimiento.logo %}
+
+                    <img
+                        src="{{ emprendimiento.logo.url }}"
+                        class="logo-preview"
+                    >
+
+                {% else %}
+
+                    <div class="logo-placeholder">
+
+                        <span>
+                            Sube tu logo Aquí
+                        </span>
+
+                    </div>
+
+                {% endif %}
+
+                <input
+                    type="file"
+                    name="logo"
+                    hidden
+                    accept="image/*"
+                    onchange="document.getElementById('logoForm').submit();"
+                >
+
+            </label>
+
+        </form>
+
+    </div>
+
+    <!-- IMAGENES -->
+    <div class="emp-card tutorial-step">
+
+        <h2>Subir imágenes de tu emprendimiento</h2>
+
+        <div class="imagenes-grid-custom">
+
+            {% for img in emprendimiento.imagenes.all %}
+
+                <div class="img-card-custom">
+
+                    <img src="{{ img.imagen.url }}">
+
+                </div>
+
+            {% endfor %}
+
+            {% if emprendimiento.imagenes.count < 5 %}
+
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+                class="mini-upload-form"
+            >
+
+                {% csrf_token %}
+
+                <input type="hidden" name="tipo" value="imagenes">
+
+                <label class="mini-upload-box">
+
+                    <span>Subir imagen</span>
+
+                    <input
+                        type="file"
+                        name="imagenes"
+                        hidden
+                        accept="image/*"
+                        onchange="this.form.submit();"
+                    >
+
+                </label>
+
+            </form>
+
+            {% endif %}
+
+        </div>
+
+        {% if emprendimiento.imagenes.count < 5 %}
+
+        <button
+            type="button"
+            class="config-btn extra-img-btn"
+            onclick="document.querySelector('.mini-upload-box input').click();"
+        >
+            Agregar campo para subir imagen
+        </button>
+
+        {% endif %}
+
     </div>
 
     <!-- PUBLICAR -->
-    <div class="publicar-box tutorial-step" id="stepPublicar">
+    <form method="POST">
 
-        <button class="publicar-btn" disabled>
-            Publicar mi emprendimiento
-        </button>
+        {% csrf_token %}
 
-        <br>
+        <input type="hidden" name="tipo" value="publicar">
 
-        <p>
-            Debes completar logo, imágenes y mínimo 3 productos.
-        </p>
+        <div class="publicar-container">
 
-    </div>
+            <button
+                type="submit"
+                class="publicar-btn"
+                {% if not puede_publicar %}disabled{% endif %}
+            >
+                Publicar Emprendimiento
+            </button>
 
-    {% else %}
+        </div>
 
-    <div class="empty-main">
-        <h2>No tienes emprendimiento aprobado aún</h2>
-        <p>Primero espera aprobación para comenzar.</p>
-    </div>
+    </form>
 
     {% endif %}
 
 </div>
 
-<!-- =========================
-     MODAL AYUDA
-========================= -->
-<div class="ayuda-modal" id="ayudaModal">
+<!-- MODAL PRODUCTO -->
+<div class="producto-modal" id="productoModal">
 
-    <div class="ayuda-content">
+    <div class="producto-modal-content">
 
-        <div class="ayuda-header">
-            <h3>Centro de ayuda</h3>
-            <span id="closeAyuda">&times;</span>
-        </div>
+        <h3>Agregar un Producto</h3>
 
-        <div class="ayuda-body">
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+            id="productoForm"
+        >
 
-            <p>
-                <strong>Información base:</strong>
-                revisa los datos principales de tu emprendimiento.
-            </p>
+            {% csrf_token %}
 
-            <br>
+            <input type="hidden" name="tipo" value="producto">
 
-            <p>
-                <strong>Logo:</strong>
-                agrega la imagen principal de tu negocio.
-            </p>
+            <div class="campo-modal">
 
-            <br>
+                <label>Nombre del producto</label>
 
-            <p>
-                <strong>Carrusel:</strong>
-                puedes subir hasta 5 imágenes destacadas.
-            </p>
-
-            <br>
-
-            <p>
-                <strong>Productos:</strong>
-                debes registrar mínimo 3 productos.
-            </p>
-
-            <br>
-
-            <p>
-                <strong>Publicar:</strong>
-                solo podrás publicar cuando completes todos los requisitos.
-            </p>
-
-            <div class="tutorial-help-box" style="margin-top: 25px; text-align:center;">
-
-                <button
-                    type="button"
-                    class="tutorial-help-btn"
-                    id="openTutorialManual"
-                    style="
-                        background: linear-gradient(135deg, #7c3aed, #9333ea);
-                        color: white;
-                        border: none;
-                        padding: 14px 22px;
-                        border-radius: 12px;
-                        cursor: pointer;
-                        font-weight: bold;
-                        width: 100%;
-                    "
-                >
-                    Ver tutorial guiado
-                </button>
+                {{ producto_form.nombre }}
 
             </div>
 
-        </div>
+            <div class="campo-modal">
 
-    </div>
+                <label>Imagen del producto</label>
 
-</div>
+                <label class="image-preview-modal upload-product-img">
 
-<!-- =========================
-     TUTORIAL GUIADO
-========================= -->
-<div class="tutorial-overlay {% if mostrar_tutorial %}active{% endif %}" id="tutorialOverlay">
+                    <span id="textoPreviewProducto">
+                        Subir imagen
+                    </span>
 
-    <div class="tutorial-tooltip" id="tutorialTooltip">
+                    <img
+                        id="imgPreviewProducto"
+                        style="display:none;"
+                    >
 
-        <h3>Guía de inicio</h3>
+                    <!-- IMPORTANTE -->
+                    <input
+                        type="file"
+                        name="imagen"
+                        id="productoImagenInput"
+                        hidden
+                        accept="image/*"
+                        required
+                        onchange="previewProducto(event)"
+                    >
 
-        <p id="tutorialText"></p>
+                </label>
 
-        <div class="tutorial-actions">
-            <button type="button" id="nextTutorial">
-                Siguiente
+            </div>
+
+            <div class="campo-modal">
+
+                <label>Descripción del producto</label>
+
+                {{ producto_form.descripcion }}
+
+            </div>
+
+            <div class="campo-modal">
+
+                <label>Precio</label>
+
+                {{ producto_form.precio }}
+
+            </div>
+
+            <!-- CATEGORIA OCULTA -->
+            <div style="display:none;">
+
+                <select name="categoria">
+                    <option value="otros" selected>Otros</option>
+                </select>
+
+            </div>
+
+            <button
+                type="submit"
+                class="config-btn modal-save-btn"
+            >
+                Guardar producto
             </button>
-        </div>
+
+        </form>
 
     </div>
 
 </div>
+
+<script>
+
+function openProductoModal() {
+
+    document
+        .getElementById("productoModal")
+        .classList
+        .add("active");
+}
+
+function closeProductoModal() {
+
+    document
+        .getElementById("productoModal")
+        .classList
+        .remove("active");
+}
+
+window.onclick = function(e){
+
+    const modal = document.getElementById("productoModal");
+
+    if(e.target === modal){
+        closeProductoModal();
+    }
+
+}
+
+function previewProducto(event){
+
+    const file = event.target.files[0];
+
+    if(file){
+
+        const img = document.getElementById("imgPreviewProducto");
+        const texto = document.getElementById("textoPreviewProducto");
+
+        img.src = URL.createObjectURL(file);
+
+        img.style.display = "block";
+
+        texto.style.display = "none";
+    }
+
+}
+
+/* CERRAR MODAL CUANDO ENVIA */
+
+document
+.getElementById("productoForm")
+.addEventListener("submit", function(){
+
+    closeProductoModal();
+
+});
+
+</script>
 
 {% endblock %}

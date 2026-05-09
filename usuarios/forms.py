@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import CustomUser, Emprendimiento
+from .models import *
 
 
 # =========================
@@ -113,3 +114,46 @@ class EmprendimientoForm(forms.ModelForm):
 
     def clean_vende_en_institucion(self):
         return self.cleaned_data["vende_en_institucion"] == "True"
+    
+
+
+
+# =========================
+# PRODUCTOS
+# =========================
+
+class ProductoForm(forms.ModelForm):
+
+    class Meta:
+        model = Producto
+
+        fields = [
+            "nombre",
+            "descripcion",
+            "precio",
+            "imagen",
+            "categoria"
+        ]
+
+        widgets = {
+
+            "nombre": forms.TextInput(attrs={
+                "placeholder": "Nombre del producto"
+            }),
+
+            "descripcion": forms.Textarea(attrs={
+                "rows": 4,
+                "placeholder": "Descripción del producto"
+            }),
+
+            "precio": forms.NumberInput(attrs={
+                "placeholder": "Precio"
+            }),
+
+            "categoria": forms.Select(),
+
+            "imagen": forms.FileInput(attrs={
+                "hidden": True
+            })
+
+        }

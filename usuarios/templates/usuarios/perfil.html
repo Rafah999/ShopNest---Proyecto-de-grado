@@ -72,6 +72,13 @@
                 <button class="registrar-btn">Registrar</button>
             </a>
 
+        {% elif emprendimiento.publicado %}
+            <h3>Gestión de Negocio</h3>
+            <a href="{% url 'mi_emprendimiento' %}">
+                <button class="registrar-btn aprobado-btn">
+                    Gestionar negocio
+                </button>
+            </a>
         {% elif emprendimiento.estado == "revision" %}
             <h3>Estado de solicitud</h3>
             <p class="estado-texto">⏳ En espera de una respuesta</p>

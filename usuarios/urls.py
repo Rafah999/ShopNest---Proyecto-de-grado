@@ -21,4 +21,16 @@ urlpatterns = [
     path('mi-emprendimiento/', views.mi_emprendimiento, name='mi_emprendimiento'),
     path("api/notificaciones/", views.obtener_notificaciones, name="obtener_notificaciones"),
     path("api/notificaciones/marcar/", views.marcar_notificaciones_vistas, name="marcar_notificaciones"),
+    path("gestor-emprendimiento/", views.gestor_emprendimiento, name="gestor_emprendimiento"),
+    path(
+        "actualizar-stock/",
+        views.actualizar_stock,
+        name="actualizar_stock"
+    ),
+
+    path(
+        "toggle-visibility/",
+        views.toggle_visibility,
+        name="toggle_visibility"
+    ),
 ]

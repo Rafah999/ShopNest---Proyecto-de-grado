@@ -5,9 +5,11 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model, authenticate, login
 from usuarios.models import CustomUser
 from django.contrib import messages
-from .forms import RegistroForm, LoginForm, EmprendimientoForm, FotoPerfilForm
+from .forms import ProductoForm, RegistroForm, LoginForm, EmprendimientoForm, FotoPerfilForm
 from .models import Emprendimiento, Notificacion
 from django.http import JsonResponse
+from .models import *
+from django.views.decorators.http import require_POST
 
 
 User = get_user_model()  # Modelo de usuario personalizado
@@ -210,25 +212,214 @@ def solicitud_enviada(request):
 
 @login_required
 def mi_emprendimiento(request):
-    try:
-        emprendimiento = Emprendimiento.objects.get(
-            usuario=request.user,
-            estado="aprobado"
-        )
-    except Emprendimiento.DoesNotExist:
-        emprendimiento = None
+
+    emprendimiento = Emprendimiento.objects.filter(
+        usuario=request.user,
+        estado="aprobado"
+    ).first()
+
+    if not emprendimiento:
+        return redirect("perfil")
+
+    if emprendimiento.publicado:
+        return redirect("gestor_emprendimiento")
+
+    # =========================
+    # LOGO
+    # =========================
+    if request.method == "POST":
+
+        tipo = request.POST.get("tipo")
+
+        # LOGO
+        if tipo == "logo":
+
+            logo = request.FILES.get("logo")
+
+            if logo:
+                emprendimiento.logo = logo
+                emprendimiento.save()
+
+        # IMAGENES
+        elif tipo == "imagenes":
+
+            archivos = request.FILES.getlist("imagenes")
+
+            if emprendimiento.imagenes.count() < 5:
+
+                for archivo in archivos:
+
+                    if emprendimiento.imagenes.count() < 5:
+
+                        EmprendimientoImagen.objects.create(
+                            emprendimiento=emprendimiento,
+                            imagen=archivo
+                        )
+
+        # PRODUCTOS
+        elif tipo == "producto":
+
+            form_producto = ProductoForm(
+                request.POST,
+                request.FILES
+            )
+
+            if form_producto.is_valid():
+
+                producto = form_producto.save(commit=False)
+
+                producto.emprendimiento = emprendimiento
+
+                producto.save()
+
+        # PUBLICAR
+        elif tipo == "publicar":
+
+            puede_publicar = (
+                emprendimiento.logo and
+                emprendimiento.imagenes.count() >= 5 and
+                emprendimiento.productos.count() >= 3
+            )
+
+            if puede_publicar:
+
+                emprendimiento.publicado = True
+                emprendimiento.save()
+
+                return redirect("gestor_emprendimiento")
+
+        return redirect("mi_emprendimiento")
+
+    producto_form = ProductoForm()
+
+    puede_publicar = (
+        emprendimiento.logo and
+        emprendimiento.imagenes.count() >= 5 and
+        emprendimiento.productos.count() >= 3
+    )
 
     mostrar_tutorial = False
 
-    if request.user.is_authenticated and not request.user.vio_tutorial_emprendimiento:
+    if not request.user.vio_tutorial_emprendimiento:
         mostrar_tutorial = True
         request.user.vio_tutorial_emprendimiento = True
         request.user.save()
 
     return render(request, "usuarios/mi_emprendimiento.html", {
         "emprendimiento": emprendimiento,
+        "producto_form": producto_form,
+        "puede_publicar": puede_publicar,
         "mostrar_tutorial": mostrar_tutorial,
     })
+
+
+@login_required
+def gestor_emprendimiento(request):
+
+    emprendimiento = Emprendimiento.objects.filter(
+        usuario=request.user,
+        estado="aprobado",
+        publicado=True
+    ).first()
+
+    if not emprendimiento:
+        return redirect("crear_emprendimiento")
+
+    productos = emprendimiento.productos.all()
+    imagenes = emprendimiento.imagenes.all()
+
+    producto_form = ProductoForm()
+
+    # =========================
+    # REGISTRAR PRODUCTO
+    # =========================
+    if request.method == "POST":
+
+        tipo = request.POST.get("tipo")
+
+        # =========================
+        # LOGO
+        # =========================
+        if tipo == "logo":
+
+            logo = request.FILES.get("logo")
+
+            if logo:
+                emprendimiento.logo = logo
+                emprendimiento.save()
+
+        # =========================
+        # IMÁGENES
+        # =========================
+        elif tipo == "imagenes":
+
+            archivos = request.FILES.getlist("imagenes")
+
+            for archivo in archivos:
+
+                EmprendimientoImagen.objects.create(
+                    emprendimiento=emprendimiento,
+                    imagen=archivo
+                )
+
+        # =========================
+        # PRODUCTOS
+        # =========================
+        elif tipo == "producto":
+
+            producto_form = ProductoForm(
+                request.POST,
+                request.FILES
+            )
+
+            if producto_form.is_valid():
+
+                producto = producto_form.save(commit=False)
+
+                producto.emprendimiento = emprendimiento
+
+                producto.save()
+
+        # =========================
+        # PUBLICAR
+        # =========================
+        elif tipo == "publicar":
+
+            total_imagenes = imagenes.count()
+            total_productos = productos.count()
+
+            if (
+                emprendimiento.logo and
+                total_imagenes >= 5 and
+                total_productos >= 3
+            ):
+
+                emprendimiento.publicado = True
+                emprendimiento.estado = "aprobado"
+
+                emprendimiento.save()
+
+                request.user.es_emprendedor = True
+                request.user.save()
+
+        return redirect("gestor_emprendimiento")
+
+    puede_publicar = (
+        emprendimiento.logo and
+        imagenes.count() >= 5 and
+        productos.count() >= 3
+    )
+
+    return render(request,
+        "usuarios/gestor_emprendimiento.html",
+        {
+            "emprendimiento": emprendimiento,
+            "productos": productos,
+            "imagenes": imagenes,
+            "producto_form": producto_form,
+            "puede_publicar": puede_publicar
+        }
+    )
 
 
 @login_required
@@ -251,3 +442,62 @@ def obtener_notificaciones(request):
 def marcar_notificaciones_vistas(request):
     request.user.notificaciones.filter(estado="no_leido").update(estado="visto")
     return JsonResponse({"ok": True})
+
+
+
+@require_POST
+@login_required
+def actualizar_stock(request):
+
+    producto_id = request.POST.get("producto_id")
+    stock = request.POST.get("stock")
+
+    try:
+
+        producto = Producto.objects.get(
+            id=producto_id,
+            emprendimiento__usuario=request.user
+        )
+
+        producto.stock = int(stock)
+        producto.save()
+
+        return JsonResponse({
+            "success": True,
+            "stock": producto.stock
+        })
+
+    except:
+
+        return JsonResponse({
+            "success": False
+        })
+    
+
+
+@require_POST
+@login_required
+def toggle_visibility(request):
+
+    producto_id = request.POST.get("producto_id")
+
+    try:
+
+        producto = Producto.objects.get(
+            id=producto_id,
+            emprendimiento__usuario=request.user
+        )
+
+        producto.visible = not producto.visible
+        producto.save()
+
+        return JsonResponse({
+            "success": True,
+            "visible": producto.visible
+        })
+
+    except:
+
+        return JsonResponse({
+            "success": False
+        })

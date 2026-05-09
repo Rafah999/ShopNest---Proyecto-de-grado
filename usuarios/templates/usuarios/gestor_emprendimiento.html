@@ -1,0 +1,641 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/emprendimiento.css' %}">
+
+<div class="gestor-wrapper">
+
+    <!-- ========================= -->
+    <!-- NOMBRE -->
+    <!-- ========================= -->
+
+    <div class="gestor-title">
+        {{ emprendimiento.nombre }}
+    </div>
+
+    <!-- ========================= -->
+    <!-- CARRUSEL -->
+    <!-- ========================= -->
+
+    <div class="gestor-banner">
+
+        {% if imagenes %}
+
+        <div class="carousel-wrapper">
+
+            <!-- FLECHA -->
+            <button class="carousel-btn left" onclick="moveSlide(-1)">
+                ❮
+            </button>
+
+            <!-- CARRUSEL -->
+            <div class="carousel-track" id="carouselTrack">
+
+                {% for img in imagenes %}
+
+                <div class="carousel-slide">
+
+                    <img src="{{ img.imagen.url }}">
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <!-- FLECHA -->
+            <button class="carousel-btn right" onclick="moveSlide(1)">
+                ❯
+            </button>
+
+        </div>
+
+        {% else %}
+
+        <div class="banner-placeholder">
+            IMGS DEL CARRUSEL
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- BOTONES -->
+    <!-- ========================= -->
+
+    <div class="gestor-btns">
+
+        <button
+            type="button"
+            class="purple-btn"
+        >
+            Editar imágenes de carrusel
+        </button>
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+            class="upload-form"
+        >
+
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="tipo"
+                value="imagenes"
+            >
+
+            <label class="purple-btn upload-label">
+
+                Agregar Imágenes al carrusel
+
+                <input
+                    type="file"
+                    name="imagenes"
+                    multiple
+                    hidden
+                    onchange="this.form.submit()"
+                >
+
+            </label>
+
+        </form>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- PRODUCTOS -->
+    <!-- ========================= -->
+
+    <div class="productos-container">
+
+        <!-- HEADER -->
+        <div class="productos-header">
+            Productos Registrados
+        </div>
+
+        <div class="productos-body">
+
+            <!-- TOP BAR -->
+            <div class="productos-topbar">
+
+                <input
+                    type="text"
+                    placeholder="Buscar productos"
+                    class="search-input"
+                >
+
+                <button class="filter-btn">
+                    ⛃
+                </button>
+
+                <button
+                    type="button"
+                    class="add-btn"
+                    id="openProductoModal"
+                >
+                    Agregar +
+                </button>
+
+            </div>
+
+            <!-- GRID -->
+            <div class="productos-grid">
+
+                {% for producto in productos %}
+
+                <div class="producto-card">
+
+                    <!-- NOMBRE -->
+                    <div class="producto-title">
+                        {{ producto.nombre }}
+                    </div>
+
+                    <!-- IMAGEN -->
+                    <div class="producto-img">
+
+                        {% if producto.imagen %}
+                            <img src="{{ producto.imagen.url }}">
+                        {% else %}
+                            Imagen del producto
+                        {% endif %}
+
+                    </div>
+
+                    <!-- PRECIO -->
+                    <div class="producto-price">
+                        Precio:
+                        {{ producto.precio }}
+                    </div>
+
+                    <!-- DESCRIPCION -->
+                    <div class="producto-desc">
+
+                        <strong>Descripcion:</strong>
+
+                        <div>
+                            {{ producto.descripcion|truncatechars:60 }}
+                        </div>
+
+                    </div>
+
+                    <!-- STOCK -->
+                    <div class="stock-box">
+
+                        <div class="stock-header">
+
+                            <label>
+                                Stock disponible
+                            </label>
+
+                            <span class="stock-status">
+                                {{ producto.stock }} unidades
+                            </span>
+
+                        </div>
+
+                        <div class="stock-controls">
+
+                            <button
+                                type="button"
+                                class="stock-btn"
+                                onclick="decreaseStock(this)"
+                            >
+                                −
+                            </button>
+
+                            <input
+                                type="number"
+                                value="{{ producto.stock }}"
+                                min="0"
+                                class="stock-input"
+                            >
+
+                            <button
+                                type="button"
+                                class="stock-btn"
+                                onclick="increaseStock(this)"
+                            >
+                                +
+                            </button>
+
+                        </div>
+
+                        <button class="save-stock-btn" onclick="saveStock('{{ producto.id }}', this)">
+                            Actualizar stock
+                        </button>
+
+                    </div>
+
+                   
+
+                    <div class="estado-panel">
+                        <div class="estado-item">
+                            <span class="estado-badge
+                                {% if producto.visible %}
+                                    active
+                                {% else %}
+                                    inactive
+                                {% endif %}">
+                                {% if producto.visible %}
+                                    Visible al público
+                                {% else %}
+                                    Oculto
+                                {% endif %}
+                            </span>
+                            <button class="estado-action-btn" onclick="toggleVisibility('{{ producto.id }}')">
+                                Cambiar
+                            </button>
+                        </div>
+                        <div class="estado-item">
+                            <span class="estado-badge {% if producto.stock > 0 %}
+                                                        active
+                                                    {% else %}
+                                                        inactive
+                                                    {% endif %}">
+                                {% if producto.stock > 0 %}
+                                    Disponible
+                                {% else %}
+                                    Agotado 
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    
+
+                    <!-- EDITAR -->
+                    <button class="editar-btn">
+                        Editar
+                    </button>
+
+                </div>
+
+                {% empty %}
+
+                <div class="empty-products">
+                    No hay productos registrados.
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ========================= -->
+<!-- MODAL -->
+<!-- ========================= -->
+
+<div class="producto-modal" id="productoModal">
+
+    <div class="producto-modal-content">
+
+        <h3>Agregar un Producto</h3>
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+            id="productoForm"
+        >
+
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="tipo"
+                value="producto"
+            >
+
+            <!-- NOMBRE -->
+            <div class="campo-modal">
+
+                <label>Nombre del producto</label>
+
+                {{ producto_form.nombre }}
+
+            </div>
+
+            <!-- IMAGEN -->
+            <div class="campo-modal">
+
+                <label>Imagen del producto</label>
+
+                <label class="image-preview-modal upload-product-img">
+
+                    <span id="textoPreviewProducto">
+                        Agregar Imagen
+                    </span>
+
+                    <img
+                        id="imgPreviewProducto"
+                        style="display:none;"
+                    >
+
+                    <input
+                        type="file"
+                        name="imagen"
+                        id="productoImagenInput"
+                        hidden
+                        accept="image/*"
+                        onchange="previewProducto(event)"
+                    >
+
+                </label>
+
+            </div>
+
+            <!-- DESCRIPCION -->
+            <div class="campo-modal">
+
+                <label>Descripcion del producto</label>
+
+                {{ producto_form.descripcion }}
+
+            </div>
+
+            <!-- PRECIO -->
+            <div class="campo-modal">
+
+                <label>Precio</label>
+
+                {{ producto_form.precio }}
+
+            </div>
+
+            <!-- CATEGORIA -->
+            <div style="display:none;">
+
+                <select name="categoria">
+                    <option value="otros" selected>
+                        Otros
+                    </option>
+                </select>
+
+            </div>
+
+            <button
+                type="submit"
+                class="guardar-btn"
+            >
+                Guardar producto
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+const productoModal =
+document.getElementById("productoModal");
+
+const openProductoModal =
+document.getElementById("openProductoModal");
+
+openProductoModal.addEventListener("click", () => {
+
+    productoModal.classList.add("active");
+
+    document.body.style.overflow = "hidden";
+
+});
+
+productoModal.addEventListener("click", (e) => {
+
+    if(e.target === productoModal){
+
+        productoModal.classList.remove("active");
+
+        document.body.style.overflow = "auto";
+
+    }
+
+});
+
+function previewProducto(event){
+
+    const file = event.target.files[0];
+
+    if(file){
+
+        const img =
+        document.getElementById("imgPreviewProducto");
+
+        const texto =
+        document.getElementById("textoPreviewProducto");
+
+        img.src = URL.createObjectURL(file);
+
+        img.style.display = "block";
+
+        texto.style.display = "none";
+
+    }
+
+}
+
+</script>
+<script>
+
+let currentSlide = 0;
+
+function moveSlide(direction){
+
+    const track =
+    document.getElementById("carouselTrack");
+
+    const slides =
+    document.querySelectorAll(".carousel-slide");
+
+    currentSlide += direction;
+
+    if(currentSlide < 0){
+        currentSlide = slides.length - 1;
+    }
+
+    if(currentSlide >= slides.length){
+        currentSlide = 0;
+    }
+
+    updateCarousel();
+
+}
+
+function updateCarousel(){
+
+    const slides =
+    document.querySelectorAll(".carousel-slide");
+
+    slides.forEach((slide, index) => {
+
+        slide.classList.remove(
+            "active",
+            "left",
+            "right"
+        );
+
+        if(index === currentSlide){
+
+            slide.classList.add("active");
+
+        }else if(
+            index ===
+            (currentSlide - 1 + slides.length)
+            % slides.length
+        ){
+
+            slide.classList.add("left");
+
+        }else if(
+            index ===
+            (currentSlide + 1)
+            % slides.length
+        ){
+
+            slide.classList.add("right");
+
+        }
+
+    });
+
+}
+
+updateCarousel();
+
+</script>
+<script>
+
+/* ========================= */
+/* STOCK */
+/* ========================= */
+
+function increaseStock(button){
+
+    const input =
+    button.parentElement.querySelector(".stock-input");
+
+    input.value = parseInt(input.value || 0) + 1;
+
+}
+
+function decreaseStock(button){
+
+    const input =
+    button.parentElement.querySelector(".stock-input");
+
+    let current = parseInt(input.value || 0);
+
+    if(current > 0){
+
+        input.value = current - 1;
+
+    }
+
+}
+
+</script>
+<script>
+
+function getCSRFToken() {
+
+    return document.querySelector(
+        '[name=csrfmiddlewaretoken]'
+    ).value;
+
+}
+
+async function saveStock(productoId, btn){
+
+    const card =
+    btn.closest(".producto-card");
+
+    const input =
+    card.querySelector(".stock-input");
+
+    const stock = input.value;
+
+    const formData = new FormData();
+
+    formData.append(
+        "producto_id",
+        productoId
+    );
+
+    formData.append(
+        "stock",
+        stock
+    );
+
+    const response = await fetch(
+        "/actualizar-stock/",
+        {
+            method:"POST",
+            headers:{
+                "X-CSRFToken": getCSRFToken()
+            },
+            body: formData
+        }
+    );
+
+    const data = await response.json();
+
+    if(data.success){
+
+        btn.innerText = "Actualizado";
+
+        setTimeout(() => {
+
+            btn.innerText =
+            "Actualizar stock";
+
+        }, 1200);
+
+        location.reload();
+
+    }
+
+}
+
+async function toggleVisibility(productoId){
+
+    const formData = new FormData();
+
+    formData.append(
+        "producto_id",
+        productoId
+    );
+
+    const response = await fetch(
+        "/toggle-visibility/",
+        {
+            method:"POST",
+            headers:{
+                "X-CSRFToken": getCSRFToken()
+            },
+            body: formData
+        }
+    );
+
+    const data = await response.json();
+
+    if(data.success){
+
+        location.reload();
+
+    }
+
+}
+
+</script>
+{% endblock %}

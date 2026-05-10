@@ -1,6 +1,366 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-    <h1>Bienvenido a ShopNest</h1>
-    <p>Explora la plataforma de emprendimientos</p>
+
+<link rel="stylesheet" href="{% static 'css/inicio.css' %}">
+
+<div class="inicio-wrapper">
+
+    <!-- ========================= -->
+    <!-- HERO -->
+    <!-- ========================= -->
+
+    <div class="hero-carousel">
+
+        <button class="hero-btn left" onclick="moveHero(-1)">
+            ❮
+        </button>
+
+        <div class="hero-track" id="heroTrack">
+
+            <!-- PROMOCION SHOPNEST -->
+            <div class="hero-slide active promo-slide">
+
+                <img
+                    src="{% static 'img/promocion_shopnest3.png' %}"
+                    class="promo-img"
+                >
+
+            </div>
+
+            <!-- PRODUCTOS -->
+            {% for producto in productos_carrusel %}
+
+            <div class="hero-slide">
+
+                <img src="{{ producto.imagen.url }}">
+
+                <div class="hero-overlay">
+
+                    <div class="hero-info">
+
+                        <h2>
+                            {{ producto.nombre }}
+                        </h2>
+
+                        <p>
+                            {{ producto.emprendimiento.nombre }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        <button class="hero-btn right" onclick="moveHero(1)">
+            ❯
+        </button>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- EMPRENDIMIENTOS -->
+    <!-- ========================= -->
+
+    <div class="home-section">
+
+        <div class="section-title">
+            Emprendimientos
+        </div>
+
+        <div class="horizontal-wrapper">
+
+            <button
+                class="scroll-btn left"
+                onclick="scrollEmp(-1)"
+            >
+                ❮
+            </button>
+
+            <div class="horizontal-scroll" id="empScroll">
+
+                <div class="horizontal-track">
+
+                    {% for emp in emprendimientos %}
+
+                    <div class="emp-card-home">
+
+                        <div class="emp-card-banner">
+
+                            {% if emp.logo %}
+                                <img src="{{ emp.logo.url }}">
+                            {% endif %}
+
+                        </div>
+
+                        <div class="emp-card-content">
+
+                            <h3>{{ emp.nombre }}</h3>
+
+                            <p>
+                                {{ emp.descripcion|truncatechars:90 }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            <button
+                class="scroll-btn right"
+                onclick="scrollEmp(1)"
+            >
+                ❯
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- PRODUCTOS -->
+    <!-- ========================= -->
+
+    <div class="home-section">
+
+        <div class="section-title">
+            Productos destacados
+        </div>
+
+        <div class="productos-home-wrapper">
+
+            <button
+                class="scroll-btn left"
+                onclick="scrollProductos(-1)"
+            >
+                ❮
+            </button>
+
+            <div
+                class="productos-home-grid"
+                id="productosScroll"
+            >
+
+                {% for producto in productos %}
+
+                <div class="producto-home-card">
+
+                    <div class="producto-home-img">
+
+                        <img src="{{ producto.imagen.url }}">
+
+                    </div>
+
+                    <div class="producto-home-content">
+
+                        <h4>
+                            {{ producto.nombre }}
+                        </h4>
+
+                        <p>
+                            {{ producto.emprendimiento.nombre }}
+                        </p>
+                        <br>
+
+                        <div class="producto-home-price">
+
+                            ${{ producto.precio }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <button
+                class="scroll-btn right"
+                onclick="scrollProductos(1)"
+            >
+                ❯
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+/* ========================= */
+/* HERO */
+/* ========================= */
+
+let heroIndex = 0;
+
+function moveHero(direction){
+
+    const slides =
+    document.querySelectorAll(".hero-slide");
+
+    slides[heroIndex]
+    .classList.remove("active");
+
+    heroIndex += direction;
+
+    if(heroIndex < 0){
+        heroIndex = slides.length - 1;
+    }
+
+    if(heroIndex >= slides.length){
+        heroIndex = 0;
+    }
+
+    slides[heroIndex]
+    .classList.add("active");
+
+}
+
+/* ========================= */
+/* AUTO */
+/* ========================= */
+
+const heroCarousel =
+document.querySelector(".hero-carousel");
+
+let heroInterval = setInterval(() => {
+
+    moveHero(1);
+
+}, 5000);
+
+/* ========================= */
+/* PAUSAR */
+/* ========================= */
+
+heroCarousel.addEventListener("mousedown", () => {
+
+    clearInterval(heroInterval);
+
+});
+
+/* ========================= */
+/* REANUDAR */
+/* ========================= */
+
+heroCarousel.addEventListener("mouseup", () => {
+
+    heroInterval = setInterval(() => {
+
+        moveHero(1);
+
+    }, 5000);
+
+});
+
+/* ========================= */
+/* SI SALE */
+/* ========================= */
+
+heroCarousel.addEventListener("mouseleave", () => {
+
+    clearInterval(heroInterval);
+
+    heroInterval = setInterval(() => {
+
+        moveHero(1);
+
+    }, 5000);
+
+});
+
+/* ========================= */
+/* PRODUCTOS */
+/* ========================= */
+let productosPosition = 0;
+
+function scrollProductos(direction){
+
+    const container =
+    document.getElementById("productosScroll");
+
+    const card =
+    container.querySelector(".producto-home-card");
+
+    if(!card) return;
+
+    const cardWidth =
+    card.offsetWidth + 18;
+
+    productosPosition +=
+    direction * cardWidth;
+
+    const maxScroll =
+    container.scrollWidth -
+    container.clientWidth;
+
+    if(productosPosition < 0){
+        productosPosition = 0;
+    }
+
+    if(productosPosition > maxScroll){
+        productosPosition = maxScroll;
+    }
+
+    container.style.transform =
+    `translateX(-${productosPosition}px)`;
+
+}
+
+/* ========================= */
+/* EMPRENDIMIENTOS */
+/* ========================= */
+
+let empPosition = 0;
+
+function scrollEmp(direction){
+
+    const container =
+    document.querySelector(".horizontal-track");
+
+    const card =
+    container.querySelector(".emp-card-home");
+
+    if(!card) return;
+
+    const cardWidth =
+    card.offsetWidth + 18;
+
+    empPosition +=
+    direction * cardWidth;
+
+    const maxScroll =
+    container.scrollWidth -
+    container.parentElement.clientWidth;
+
+    if(empPosition < 0){
+        empPosition = 0;
+    }
+
+    if(empPosition > maxScroll){
+        empPosition = maxScroll;
+    }
+
+    container.style.transform =
+    `translateX(-${empPosition}px)`;
+
+}
+
+</script>
+
 {% endblock %}

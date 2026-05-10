@@ -15,11 +15,51 @@ from django.views.decorators.http import require_POST
 User = get_user_model()  # Modelo de usuario personalizado
 
 
+from random import shuffle
+
 # --- Página de inicio ---
 def index(request):
-    return render(request, "base.html", {
+
+    # SOLO EMPRENDIMIENTOS PUBLICADOS
+    emprendimientos = Emprendimiento.objects.filter(
+        publicado=True,
+        estado="aprobado"
+    )
+
+    # PRODUCTOS VISIBLES
+    productos = Producto.objects.filter(
+        emprendimiento__publicado=True,
+        emprendimiento__estado="aprobado",
+        visible=True
+    )
+
+    # PRODUCTOS DISPONIBLES PARA CARRUSEL
+    productos_carrusel = Producto.objects.filter(
+        emprendimiento__publicado=True,
+        emprendimiento__estado="aprobado",
+        visible=True,
+        stock__gt=0
+    )
+
+    productos_carrusel = list(productos_carrusel)
+
+    shuffle(productos_carrusel)
+
+    # LIMITAR
+    productos_carrusel = productos_carrusel[:8]
+
+    return render(request, "usuarios/inicio.html", {
+
         "body_class": "inicio-page",
-        "mostrar_mensaje": not request.user.is_authenticated
+
+        "mostrar_mensaje":
+        not request.user.is_authenticated,
+
+        "emprendimientos": emprendimientos,
+
+        "productos": productos.order_by("-id")[:20],
+
+        "productos_carrusel": productos_carrusel
     })
 
 

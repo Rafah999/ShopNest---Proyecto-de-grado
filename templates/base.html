@@ -7,18 +7,118 @@
     <title>ShopNest</title>
 
     <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <style>
+
+        .custom-brand{
+
+            position:relative;
+
+            display:flex;
+            align-items:center;
+
+            width:max-content;
+
+            text-decoration:none;
+
+            overflow:visible;
+        }
+
+        .custom-logo{
+
+            width:42px;
+            height:42px;
+
+            object-fit:contain;
+
+            position:relative;
+
+            z-index:2;
+        }
+
+        .brand-hover-text{
+
+            position:absolute;
+
+            left:15px;
+
+            opacity:0;
+
+            transform:translateX(-12px);
+
+            transition:.35s ease;
+
+            white-space:nowrap;
+
+            display:flex;
+            align-items:center;
+            gap:0;
+
+            font-family:'Poppins', sans-serif;
+
+            font-size:24px;
+
+            font-weight:600;
+
+            letter-spacing:-1px;
+
+            pointer-events:none;
+
+            z-index:1;
+        }
+
+        .custom-brand:hover .brand-hover-text{
+
+            opacity:1;
+
+            transform:translateX(34px);
+
+        }
+
+        .shop-part{
+            color:#8b5cf6;
+        }
+
+        .nest-part{
+            color:white;
+        }
+
+        </style>
 </head>
 
 <body class="{% block body_class %}{% endblock %}">
 
     <!-- NAVBAR -->
     <div class="navbar">
-        <a href="{% url 'index' %}" class="brand">ShopNest</a>
+        <a href="{% url 'index' %}" class="brand custom-brand">
 
-        <div class="nav-right">
+            <img
+                src="{% static 'img/faviconcopy.png' %}"
+                class="brand-logo custom-logo"
+                alt="ShopNest"
+            >
+
+            <div class="brand-hover-text">
+
+                <span class="shop-part">
+                    Shop
+                </span>
+
+                <span class="nest-part">
+                    Nest
+                </span>
+
+            </div>
+
+        </a>
+                <div class="nav-right">
             {% if user.is_authenticated %}
                 <div class="user-circle" id="openDrawer">
                     {{ user.username|first|upper }}

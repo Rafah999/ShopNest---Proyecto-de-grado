@@ -49,11 +49,72 @@ main {
     color: white;
     text-decoration: none;
 }
+.brand{
+    display:flex;
+    align-items:center;
+    height:60px;
+}
 
+.brand-logo{
+    height:40px;
+    width:auto;
+    object-fit:contain;
+    display:block;
+}
+/* ========================= */
+/* BRAND */
+/* ========================= */
+
+/* ========================= */
+/* BRAND */
+/* ========================= */
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    text-decoration:none;
+}
+
+.brand-logo{
+    width:42px;
+    height:42px;
+
+    object-fit:contain;
+
+    display:block;
+
+    flex-shrink:0;
+}
+
+.brand-text{
+
+    display:flex;
+    align-items:center;
+
+    font-family:
+    'Poppins',
+    sans-serif;
+
+    font-size:30px;
+    font-weight:800;
+
+    line-height:1;
+}
+
+.shop-text{
+    color:#111;
+}
+
+.nest-text{
+    color:white;
+}
 .navbar a {
     color: white;
     text-decoration: none;
     font-weight: bold;
+    height: 70px;
 }
 
 /* círculo usuario */

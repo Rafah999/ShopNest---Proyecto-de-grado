@@ -70,6 +70,8 @@ class EmprendimientoForm(forms.ModelForm):
         widget=forms.RadioSelect
     )
 
+    
+
     tiene_domicilio = forms.ChoiceField(
         choices=[("True", "Sí"), ("False", "No")],
         widget=forms.RadioSelect
@@ -93,6 +95,7 @@ class EmprendimientoForm(forms.ModelForm):
             "fecha_nacimiento": forms.DateInput(attrs={"type": "date"}),
             "fecha_creacion": forms.DateInput(attrs={"type": "date"}),
             "descripcion": forms.Textarea(attrs={"rows": 4}),
+            "categoria": forms.Select(),
         }
 
     # =========================
@@ -157,3 +160,6 @@ class ProductoForm(forms.ModelForm):
             })
 
         }
+
+
+

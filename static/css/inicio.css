@@ -179,7 +179,11 @@
     display:none;
 }
 
-
+.emp-card-home,
+.producto-home-card{
+    text-decoration:none;
+    color:inherit;
+}
 /* ========================= */
 /* EMPRENDIMIENTO CARD */
 /* ========================= */

@@ -110,7 +110,9 @@
     <!-- ========================= -->
     <!-- PRODUCTOS -->
     <!-- ========================= -->
-
+    <hr>
+    <br>
+    <br>
     <div class="productos-container">
 
         <!-- HEADER -->
@@ -372,13 +374,11 @@
             </div>
 
             <!-- CATEGORIA -->
-            <div style="display:none;">
+            <div class="campo-modal">
 
-                <select name="categoria">
-                    <option value="otros" selected>
-                        Otros
-                    </option>
-                </select>
+                <label>Categoría</label>
+
+                {{ producto_form.categoria }}
 
             </div>
 

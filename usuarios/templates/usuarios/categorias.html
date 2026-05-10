@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div style="width:500px;margin:40px auto;">
+
+    <h2>
+        Categorías
+    </h2>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <input
+            type="text"
+            name="nombre"
+            placeholder="Nombre categoría"
+            required
+        >
+
+        <button type="submit">
+            Agregar
+        </button>
+
+    </form>
+
+    <hr>
+
+    {% for categoria in categorias %}
+
+        <div>
+
+            {{ categoria.codigo }}
+            -
+            {{ categoria.nombre }}
+
+        </div>
+
+    {% empty %}
+
+        <p>No hay categorías.</p>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

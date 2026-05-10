@@ -299,10 +299,14 @@ def mi_emprendimiento(request):
         # PRODUCTOS
         elif tipo == "producto":
 
+            
+
             form_producto = ProductoForm(
                 request.POST,
                 request.FILES
             )
+
+            print (form_producto.errors)  # 🔥 CLAVE PARA DEBUG
 
             if form_producto.is_valid():
 
@@ -311,6 +315,8 @@ def mi_emprendimiento(request):
                 producto.emprendimiento = emprendimiento
 
                 producto.save()
+
+                print ("Producto creado:", producto.nombre)
 
         # PUBLICAR
         elif tipo == "publicar":
@@ -330,7 +336,11 @@ def mi_emprendimiento(request):
 
         return redirect("mi_emprendimiento")
 
-    producto_form = ProductoForm()
+    producto_form = ProductoForm(
+        initial= {
+            "categoria": emprendimiento.categoria
+        }
+    )
 
     puede_publicar = (
         emprendimiento.logo and
@@ -368,7 +378,11 @@ def gestor_emprendimiento(request):
     productos = emprendimiento.productos.all()
     imagenes = emprendimiento.imagenes.all()
 
-    producto_form = ProductoForm()
+    producto_form = ProductoForm(
+        initial={
+            "categoria": emprendimiento.categoria
+        }
+    )
 
     # =========================
     # REGISTRAR PRODUCTO
@@ -462,6 +476,62 @@ def gestor_emprendimiento(request):
     )
 
 
+
+def ver_emprendimiento(request, id):
+
+    emprendimiento = Emprendimiento.objects.filter(
+        id=id,
+        publicado=True,
+        estado="aprobado"
+    ).first()
+
+    if not emprendimiento:
+        return redirect("index")
+
+    productos = emprendimiento.productos.filter(
+        visible=True
+    )
+
+    imagenes = emprendimiento.imagenes.all()
+
+    return render(request,
+        "usuarios/ver_emprendimiento.html",
+        {
+            "emprendimiento": emprendimiento,
+            "productos": productos,
+            "imagenes": imagenes
+        }
+    )
+
+
+
+
+def ver_producto(request, id):
+
+    producto = Producto.objects.filter(
+        id=id,
+        visible=True,
+        emprendimiento__publicado=True,
+        emprendimiento__estado="aprobado"
+    ).first()
+
+    if not producto:
+        return redirect("index")
+
+    relacionados = Producto.objects.filter(
+        categoria=producto.categoria,
+        visible=True
+    ).exclude(id=producto.id)[:10]
+
+    return render(request,
+        "usuarios/ver_producto.html",
+        {
+            "producto": producto,
+            "relacionados": relacionados
+        }
+    )
+
+
 @login_required
 def obtener_notificaciones(request):
     notificaciones = request.user.notificaciones.all().order_by("-fecha")
@@ -541,3 +611,30 @@ def toggle_visibility(request):
         return JsonResponse({
             "success": False
         })
+    
+
+
+
+@login_required
+def categorias(request):
+
+    if request.method == "POST":
+
+        nombre = request.POST.get("nombre")
+
+        if nombre:
+
+            CategoriaProducto.objects.create(
+                nombre=nombre
+            )
+
+            return redirect("categorias")
+
+    categorias = CategoriaProducto.objects.all().order_by("codigo")
+
+    return render(request,
+        "usuarios/categorias.html",
+        {
+            "categorias": categorias
+        }
+    )

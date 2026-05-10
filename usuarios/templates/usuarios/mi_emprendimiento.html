@@ -36,7 +36,7 @@
 
             <div>
                 <label>Tipo</label>
-                <p>{{ emprendimiento.tipo_emprendimiento }}</p>
+                <p>{{ emprendimiento.categoria }}</p>
             </div>
 
             <div>
@@ -290,8 +290,8 @@
                     </span>
 
                     <img
-                        id="imgPreviewProducto"
-                        style="display:none;"
+                    id="imgPreviewProducto"
+                    style="display:none; position:absolute; inset:0;"
                     >
 
                     <!-- IMPORTANTE -->
@@ -326,14 +326,13 @@
             </div>
 
             <!-- CATEGORIA OCULTA -->
-            <div style="display:none;">
+            <div class="campo-modal">
 
-                <select name="categoria">
-                    <option value="otros" selected>Otros</option>
-                </select>
+                <label>Categoría</label>
+
+                {{ producto_form.categoria }}
 
             </div>
-
             <button
                 type="submit"
                 class="config-btn modal-save-btn"

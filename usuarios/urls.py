@@ -33,4 +33,20 @@ urlpatterns = [
         views.toggle_visibility,
         name="toggle_visibility"
     ),
+    path(
+        "emprendimiento/<int:id>/",
+        views.ver_emprendimiento,
+        name="ver_emprendimiento"
+    ),
+
+    path(
+        "producto/<int:id>/",
+        views.ver_producto,
+        name="ver_producto"
+    ),
+    path(
+        "categorias/",
+        views.categorias,
+        name="categorias"
+    ),
 ]

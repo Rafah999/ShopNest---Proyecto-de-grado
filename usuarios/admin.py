@@ -12,5 +12,5 @@ class UsuarioAdmin(admin.ModelAdmin):
 @admin.register(Emprendimiento)
 class EmprendimientoAdmin(admin.ModelAdmin):
     list_display = ('id','nombre','usuario','ciudad','estado')
-    list_filter = ('estado','ciudad','tipo_emprendimiento')
+    list_filter = ('estado','ciudad','categoria')
     search_fields = ('nombre','usuario__username','nombre_emprendedor')

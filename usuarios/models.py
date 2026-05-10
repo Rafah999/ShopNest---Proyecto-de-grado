@@ -24,6 +24,43 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
+class CategoriaProducto(models.Model):
+
+    codigo = models.CharField(
+        max_length=10,
+        unique=True,
+        blank=True
+    )
+
+    nombre = models.CharField(
+        max_length=100,
+        unique=True
+    )
+
+    creada = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+
+        # SI NO TIENE CODIGO
+        if not self.codigo:
+
+            ultima = CategoriaProducto.objects.order_by("-id").first()
+
+            if ultima:
+
+                numero = int(ultima.codigo) + 1
+
+            else:
+
+                numero = 1
+
+            self.codigo = str(numero).zfill(2)
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.codigo} - {self.nombre}"
+
 
 # =========================
 # Emprendimiento
@@ -44,7 +81,13 @@ class Emprendimiento(models.Model):
 
     # Datos del emprendimiento
     nombre = models.CharField(max_length=100)
-    tipo_emprendimiento = models.CharField(max_length=50)
+    categoria = models.ForeignKey(
+        CategoriaProducto,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="emprendimientos"
+    )
     fecha_creacion = models.DateField(null=True, blank=True)
     descripcion = models.TextField()
 
@@ -79,6 +122,12 @@ class Emprendimiento(models.Model):
         max_length=20,
         choices=ESTADOS,
         default="revision"
+    )
+    mostrar_ubicacion = models.BooleanField(default=False)
+
+    google_maps = models.TextField(
+        blank=True,
+        null=True
     )
 
     # 👇 CORREGIDO: evita error de migraciones
@@ -139,13 +188,7 @@ class EmprendimientoImagen(models.Model):
 
 class Producto(models.Model):
 
-    CATEGORIAS = [
-        ("comida", "Comida"),
-        ("ropa", "Ropa"),
-        ("tecnologia", "Tecnología"),
-        ("hogar", "Hogar"),
-        ("otros", "Otros"),
-    ]
+   
 
     emprendimiento = models.ForeignKey(
         Emprendimiento,
@@ -156,9 +199,14 @@ class Producto(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True, null=True)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
-
+    categoria = models.ForeignKey(
+        CategoriaProducto,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="productos"
+    )
     imagen = models.ImageField(upload_to="productos/")
-    categoria = models.CharField(max_length=50, choices=CATEGORIAS)
     stock = models.PositiveIntegerField(default=0)
 
     visible = models.BooleanField(default=True)

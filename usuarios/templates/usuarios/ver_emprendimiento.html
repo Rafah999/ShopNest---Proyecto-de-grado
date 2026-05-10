@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/ver_emprendimiento.css' %}">
+
+<div class="ver-emp-wrapper">
+
+    <!-- HEADER -->
+    <div class="view-header">
+
+        <a
+            href="javascript:history.back()"
+            class="back-view-btn"
+        >
+            ←
+        </a>
+
+        <div class="ver-emp-title">
+            {{ emprendimiento.nombre }}
+        </div>
+
+    </div>
+
+    <!-- CARRUSEL -->
+    <div class="ver-emp-banner">
+
+        {% if imagenes %}
+
+        <div class="carousel-wrapper">
+
+            <button
+                class="carousel-btn left"
+                onclick="moveSlide(-1)"
+            >
+                ❮
+            </button>
+
+            <div class="carousel-track">
+
+                {% for img in imagenes %}
+
+                <div class="carousel-slide">
+
+                    <img src="{{ img.imagen.url }}">
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <button
+                class="carousel-btn right"
+                onclick="moveSlide(1)"
+            >
+                ❯
+            </button>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    
+
+    <!-- PRODUCTOS -->
+    <div class="productos-section">
+
+        <div class="productos-title">
+            Productos del emprendimiento
+        </div>
+
+        <div class="productos-slider-wrapper">
+
+            <button
+                class="productos-arrow left"
+                onclick="scrollProductos(-1)"
+            >
+                ❮
+            </button>
+
+            <div
+                class="productos-slider"
+                id="productosSlider"
+            >
+
+                {% for producto in productos %}
+
+                <a
+                    href="{% url 'ver_producto' producto.id %}"
+                    class="producto-home-card"
+                >
+
+                    <div class="producto-home-img">
+
+                        {% if producto.imagen %}
+                            <img src="{{ producto.imagen.url }}">
+                        {% endif %}
+
+                    </div>
+
+                    <div class="producto-home-info">
+
+                        <h4>{{ producto.nombre }}</h4>
+
+                        <span>
+                            ${{ producto.precio }}
+                        </span>
+
+                    </div>
+
+                </a>
+
+                {% endfor %}
+
+            </div>
+
+            <button
+                class="productos-arrow right"
+                onclick="scrollProductos(1)"
+            >
+                ❯
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+let currentSlide = 0;
+
+const slides =
+document.querySelectorAll(".carousel-slide");
+
+function updateCarousel(){
+
+    slides.forEach((slide, index) => {
+
+        slide.classList.remove(
+            "active",
+            "left",
+            "right"
+        );
+
+        if(index === currentSlide){
+
+            slide.classList.add("active");
+
+        }else if(
+            index ===
+            (currentSlide - 1 + slides.length)
+            % slides.length
+        ){
+
+            slide.classList.add("left");
+
+        }else if(
+            index ===
+            (currentSlide + 1)
+            % slides.length
+        ){
+
+            slide.classList.add("right");
+
+        }
+
+    });
+
+}
+
+function moveSlide(direction){
+
+    currentSlide += direction;
+
+    if(currentSlide < 0){
+        currentSlide = slides.length - 1;
+    }
+
+    if(currentSlide >= slides.length){
+        currentSlide = 0;
+    }
+
+    updateCarousel();
+
+}
+
+updateCarousel();
+
+setInterval(() => {
+
+    moveSlide(1);
+
+}, 4000);
+
+function scrollProductos(direction){
+
+    const container =
+    document.getElementById("productosSlider");
+
+    const amount = 320;
+
+    container.scrollBy({
+        left: direction * amount,
+        behavior: "smooth"
+    });
+
+}
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/ver_producto.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="producto-view-wrapper">
+
+    <!-- TITULO -->
+    <!-- HEADER -->
+    <div class="view-header">
+
+        <a
+            href="javascript:history.back()"
+            class="back-view-btn"
+        >
+            ←
+        </a>
+
+        <div class="producto-top-title">
+            <h2>Detalles del producto</h2>
+        </div>
+
+    </div>
+
+    <!-- INFO -->
+    <div class="producto-main-box">
+
+        <!-- IZQUIERDA -->
+        <div class="producto-left">
+
+            <div class="producto-name">
+                {{ producto.nombre }}
+            </div>
+
+            <div class="producto-field">
+                <label>Descripcion:</label>
+
+                <div class="fake-input">
+                    {{ producto.descripcion }}
+                </div>
+            </div>
+
+            <div class="producto-field">
+                <label>Precio del Producto:</label>
+
+                <div class="fake-input">
+                    ${{ producto.precio }}
+                </div>
+            </div>
+
+            <div class="producto-field">
+                <label>Existencias:</label>
+
+                <div class="fake-input">
+                    {{ producto.stock }}
+                </div>
+            </div>
+
+            <div class="producto-buttons">
+
+                <button>
+                    Hacer pedido
+                </button>
+
+                <button>
+                    Contactar al Vendedor
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- DERECHA -->
+        <div class="producto-right">
+
+            {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}">
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- MAPA -->
+    <div class="map-section">
+
+        <div class="map-title">
+            Como encontrar El local
+        </div>
+
+        <div class="map-box">
+
+            <span>
+                Disponible próximamente
+            </span>
+
+        </div>
+
+    </div>
+
+    <!-- RELACIONADOS -->
+    <div class="related-section">
+
+        <div class="related-title">
+            Te podrían interesar
+        </div>
+
+        <div class="related-row">
+
+            {% for p in relacionados %}
+
+                <a
+                    href="{% url 'ver_producto' p.id %}"
+                    class="related-card"
+                >
+
+                    <div class="related-img-box">
+
+                        {% if p.imagen %}
+                            <img src="{{ p.imagen.url }}">
+                        {% endif %}
+
+                    </div>
+
+                    <div class="related-info">
+
+                        <span class="related-product-name">
+                            {{ p.nombre }}
+                        </span>
+
+                    </div>
+
+                </a>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -89,7 +89,8 @@
 
                     {% for emp in emprendimientos %}
 
-                    <div class="emp-card-home">
+                    <a href="{% url 'ver_emprendimiento' emp.id %}"
+                        class="emp-card-home">
 
                         <div class="emp-card-banner">
 
@@ -109,7 +110,7 @@
 
                         </div>
 
-                    </div>
+                    </a>
 
                     {% endfor %}
 
@@ -154,7 +155,8 @@
 
                 {% for producto in productos %}
 
-                <div class="producto-home-card">
+                <a href="{% url 'ver_producto' producto.id %}"
+                    class="producto-home-card">
 
                     <div class="producto-home-img">
 
@@ -181,7 +183,7 @@
 
                     </div>
 
-                </div>
+                </a>
 
                 {% endfor %}
 

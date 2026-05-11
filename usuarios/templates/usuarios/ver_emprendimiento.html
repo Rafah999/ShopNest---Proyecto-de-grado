@@ -64,6 +64,120 @@
 
     </div>
 
+    <!-- ========================= -->
+    <!-- INFO EMPRENDIMIENTO -->
+    <!-- ========================= -->
+
+    <div class="emp-info-box">
+
+        <!-- TOP -->
+        <div class="emp-info-header">
+
+            <div class="emp-info-title">
+                Información del emprendimiento
+            </div>
+
+        </div>
+
+        <!-- BODY -->
+        <div class="emp-info-body">
+
+        <!-- DESCRIPCION -->
+        <div class="emp-description">
+
+            {{ emprendimiento.descripcion }}
+
+        </div>
+
+        <!-- DERECHA -->
+        <div class="emp-side-info">
+
+            <!-- SEGUIDORES -->
+            <div class="emp-followers">
+
+                👥 {{ total_seguidores }} seguidores
+
+            </div>
+
+            <!-- ESTRELLAS -->
+            <div class="emp-rating">
+
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+
+            </div>
+
+            <!-- BOTON -->
+            <div class="emp-follow-box">
+
+                {% if siguiendo %}
+
+                <button
+                    class="follow-btn following"
+                    onclick="openUnfollowModal()"
+                >
+                    Dejar de seguir
+                </button>
+
+                {% else %}
+
+                <button class="follow-btn">
+                    Seguir emprendimiento
+                </button>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- MODAL -->
+    <!-- ========================= -->
+
+    <div
+        class="unfollow-modal"
+        id="unfollowModal"
+    >
+
+        <div class="unfollow-content">
+
+            <h3>
+                ¿Dejar de seguir?
+            </h3>
+
+            <p>
+                Ya no recibirás avisos cuando este emprendimiento publique productos.
+            </p>
+
+            <div class="unfollow-actions">
+
+                <button
+                    class="cancel-unfollow"
+                    onclick="closeUnfollowModal()"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    class="confirm-unfollow"
+                >
+                    Confirmar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
     
 
     <!-- PRODUCTOS -->
@@ -203,15 +317,37 @@ function scrollProductos(direction){
     const container =
     document.getElementById("productosSlider");
 
-    const amount = 320;
+    const card =
+    container.querySelector(".producto-home-card");
 
-    container.scrollBy({
-        left: direction * amount,
-        behavior: "smooth"
-    });
+    if(!card) return;
+
+    const amount =
+    card.offsetWidth + 22;
+
+    container.scrollLeft += direction * amount;
+
+}
+
+
+
+function openUnfollowModal(){
+
+    document
+    .getElementById("unfollowModal")
+    .classList.add("active");
+
+}
+
+function closeUnfollowModal(){
+
+    document
+    .getElementById("unfollowModal")
+    .classList.remove("active");
 
 }
 
 </script>
+
 
 {% endblock %}

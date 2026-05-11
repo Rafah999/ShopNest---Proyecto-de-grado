@@ -10,6 +10,7 @@ from .models import Emprendimiento, Notificacion
 from django.http import JsonResponse
 from .models import *
 from django.views.decorators.http import require_POST
+from social.models import *
 
 
 User = get_user_model()  # Modelo de usuario personalizado
@@ -312,6 +313,14 @@ def mi_emprendimiento(request):
 
                 producto = form_producto.save(commit=False)
 
+                tipo_stock = request.POST.get("tipo_stock")
+
+                if tipo_stock == "indefinido":
+                    producto.stock_indefinido = True
+                    producto.stock = 99999999
+                else:
+                    producto.stock_indefinido = False
+
                 producto.emprendimiento = emprendimiento
 
                 producto.save()
@@ -372,6 +381,10 @@ def gestor_emprendimiento(request):
         publicado=True
     ).first()
 
+    total_seguidores = Seguimiento.objects.filter(
+        emprendimiento=emprendimiento
+        ).count()
+
     if not emprendimiento:
         return redirect("crear_emprendimiento")
 
@@ -430,6 +443,14 @@ def gestor_emprendimiento(request):
 
                 producto = producto_form.save(commit=False)
 
+                tipo_stock = request.POST.get("tipo_stock")
+
+                if tipo_stock == "indefinido":
+                    producto.stock_indefinido = True
+                    producto.stock = 99999999
+                else:
+                    producto.stock_indefinido = False
+
                 producto.emprendimiento = emprendimiento
 
                 producto.save()
@@ -471,12 +492,13 @@ def gestor_emprendimiento(request):
             "productos": productos,
             "imagenes": imagenes,
             "producto_form": producto_form,
-            "puede_publicar": puede_publicar
+            "puede_publicar": puede_publicar,
+            "total_seguidores": total_seguidores
         }
     )
 
 
-
+@login_required
 def ver_emprendimiento(request, id):
 
     emprendimiento = Emprendimiento.objects.filter(
@@ -488,24 +510,41 @@ def ver_emprendimiento(request, id):
     if not emprendimiento:
         return redirect("index")
 
+    # TOTAL SEGUIDORES
+    total_seguidores = Seguimiento.objects.filter(
+        emprendimiento=emprendimiento
+    ).count()
+
+    # SABER SI EL USUARIO LO SIGUE
+    siguiendo = False
+
+    if request.user.is_authenticated:
+
+        siguiendo = Seguimiento.objects.filter(
+            usuario=request.user,
+            emprendimiento=emprendimiento
+        ).exists()
+
     productos = emprendimiento.productos.filter(
         visible=True
     )
 
     imagenes = emprendimiento.imagenes.all()
 
-    return render(request,
+    return render(
+        request,
         "usuarios/ver_emprendimiento.html",
         {
             "emprendimiento": emprendimiento,
             "productos": productos,
-            "imagenes": imagenes
+            "imagenes": imagenes,
+            "total_seguidores": total_seguidores,
+            "siguiendo": siguiendo
         }
     )
 
 
-
-
+@login_required
 def ver_producto(request, id):
 
     producto = Producto.objects.filter(

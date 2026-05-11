@@ -780,43 +780,73 @@
 }
 
 /* ========================= */
-/* MODAL */
+/* MODAL PRODUCTO */
 /* ========================= */
 
 .producto-modal{
 
-    position:fixed;
+    position: fixed;
 
-    inset:0;
+    inset: 0;
 
-    background:rgba(0,0,0,.45);
+    background: rgba(0,0,0,.55);
 
-    display:none;
+    display: none;
 
-    justify-content:center;
+    justify-content: center;
 
-    align-items:center;
+    align-items: flex-start;
 
-    z-index:9999;
+    overflow-y: auto;
+
+    padding: 40px 20px;
+
+    z-index: 999999;
 }
 
 .producto-modal.active{
-    display:flex;
+
+    display: flex;
 }
 
 .producto-modal-content{
 
-    width:440px;
+    width: 100%;
 
-    background:white;
+    max-width: 700px;
 
-    border-radius:28px;
+    background: #ffffff;
 
-    padding:30px;
+    border-radius: 28px;
+
+    padding: 30px;
+
+    box-sizing: border-box;
+
+    position: relative;
+
+    animation: modalFade .25s ease;
+
+    margin: auto;
 
     box-shadow:
-    0 20px 48px rgba(0,0,0,.22);
+    0 20px 50px rgba(0,0,0,.18);
 }
+
+@keyframes modalFade{
+
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
+
 
 .producto-modal-content h3{
 
@@ -951,4 +981,574 @@
     color:#777;
 
     font-weight:600;
+}
+
+/* ====================================== */
+/* FORM PRODUCTO */
+/* ====================================== */
+
+#productoForm{
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+
+}
+
+.campo-modal{
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+}
+
+.campo-modal label{
+
+    font-weight: 600;
+    color: #5b21b6;
+
+}
+
+.campo-modal input,
+.campo-modal textarea,
+.campo-modal select{
+
+    width: 100%;
+
+    padding: 14px;
+
+    border-radius: 14px;
+
+    border: 2px solid #d8b4fe;
+
+    outline: none;
+
+    font-size: 15px;
+
+    transition: .2s;
+
+}
+
+.campo-modal textarea{
+
+    resize: vertical;
+    min-height: 110px;
+
+}
+
+.campo-modal input:focus,
+.campo-modal textarea:focus,
+.campo-modal select:focus{
+
+    border-color: #7c3aed;
+
+    box-shadow: 0 0 0 4px rgba(124,58,237,.15);
+
+}
+
+.guardar-btn{
+
+    width: 100%;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background: #7c3aed;
+
+    color: white;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .2s;
+
+}
+
+.guardar-btn:hover{
+
+    background: #6d28d9;
+
+}
+
+/* ====================================== */
+/* TIPO STOCK */
+/* ====================================== */
+
+.tipo-stock-box{
+
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+
+}
+
+.tipo-stock-box label{
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    cursor: pointer;
+
+    font-weight: 500;
+
+}
+
+.tipo-stock-box input[type="radio"]{
+
+    accent-color: #7c3aed;
+
+    transform: scale(1.1);
+
+}
+
+/* ====================================== */
+/* SCROLL MODAL */
+/* ====================================== */
+
+.producto-modal-content::-webkit-scrollbar{
+
+    width: 8px;
+
+}
+
+.producto-modal-content::-webkit-scrollbar-thumb{
+
+    background: #c4b5fd;
+
+    border-radius: 20px;
+
+}
+
+
+/* ====================================== */
+/* FORMULARIO PRODUCTO RESPONSIVE */
+/* ====================================== */
+
+#productoForm *{
+
+    box-sizing: border-box;
+
+}
+
+#productoForm input,
+#productoForm textarea,
+#productoForm select{
+
+    width: 100%;
+
+    max-width: 100%;
+
+}
+
+.stock-type-box{
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+
+    background: #f5f0ff;
+
+    padding: 16px;
+
+    border-radius: 16px;
+
+}
+
+.stock-option{
+
+    display: flex !important;
+
+    align-items: center;
+
+    gap: 10px;
+
+    font-weight: 600;
+
+    color: #4c1d95;
+
+}
+
+.stock-option input{
+
+    width: auto !important;
+
+    transform: scale(1.15);
+
+    accent-color: #7c3aed;
+
+}
+
+#stockBox{
+
+    transition: .2s;
+
+}
+
+.image-preview-modal{
+
+    min-height: 180px;
+
+}
+
+.image-preview-modal span{
+
+    font-size: 15px;
+
+}
+
+.guardar-btn{
+
+    margin-top: 10px;
+
+    font-size: 16px;
+
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+    .producto-modal{
+
+        padding: 20px 12px;
+
+    }
+
+    .producto-modal-content{
+
+        padding: 22px;
+
+        border-radius: 22px;
+
+    }
+
+}
+
+/* ====================================== */
+/* NUEVO LAYOUT FORM PRODUCTO */
+/* ====================================== */
+
+#productoForm{
+
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+
+}
+
+/* FILAS DOBLES */
+
+.producto-grid-2{
+
+    display:grid;
+
+    grid-template-columns:
+    1fr 1fr;
+
+    gap:18px;
+
+}
+
+/* IMAGEN + DESCRIPCION */
+
+.producto-grid-image{
+
+    display:grid;
+
+    grid-template-columns:
+    320px 1fr;
+
+    gap:20px;
+
+    align-items:stretch;
+
+}
+
+/* CAMPOS */
+
+.campo-modal{
+
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+
+}
+
+.campo-modal label{
+
+    font-size:14px;
+    font-weight:700;
+    color:#4c1d95;
+
+}
+
+/* INPUTS */
+
+.campo-modal input,
+.campo-modal textarea,
+.campo-modal select{
+
+    width:100%;
+
+    padding:14px;
+
+    border-radius:14px;
+
+    border:2px solid #dcc7ff;
+
+    background:white;
+
+    font-size:15px;
+
+    outline:none;
+
+    transition:.2s;
+
+}
+
+.campo-modal input:focus,
+.campo-modal textarea:focus,
+.campo-modal select:focus{
+
+    border-color:#8b5cf6;
+
+    box-shadow:
+    0 0 0 4px rgba(139,92,246,.15);
+
+}
+
+/* DESCRIPCION */
+
+.campo-modal textarea{
+
+    height:100%;
+
+    min-height:220px;
+
+    resize:none;
+
+}
+
+/* IMAGEN */
+
+.image-preview-modal{
+
+    width:100%;
+
+    height:220px;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    background:#f3f0ff;
+
+    border:2px dashed #c4b5fd;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+
+    position:relative;
+
+    transition:.2s;
+
+}
+
+.image-preview-modal:hover{
+
+    background:#ede9fe;
+
+}
+
+.image-preview-modal img{
+
+    position:absolute;
+
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+}
+
+/* STOCK BOX */
+
+.stock-type-box{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+
+    background:#f7f2ff;
+
+    border-radius:16px;
+
+    padding:16px;
+
+    min-height:100%;
+
+    justify-content:center;
+
+}
+
+.stock-option{
+
+    display:flex !important;
+
+    align-items:center;
+
+    gap:10px;
+
+    font-weight:600;
+
+    color:#5b21b6;
+
+}
+
+.stock-option input{
+
+    width:auto !important;
+
+    transform:scale(1.1);
+
+    accent-color:#7c3aed;
+
+}
+
+/* BOTON */
+
+.guardar-btn{
+
+    width:100%;
+
+    border:none;
+
+    border-radius:16px;
+
+    padding:16px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #8f35e8,
+        #b548ea
+    );
+
+    color:white;
+
+    font-size:16px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.guardar-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+/* MODAL */
+
+.producto-modal-content{
+
+    max-width:900px !important;
+
+}
+
+/* RESPONSIVE */
+
+@media(max-width:850px){
+
+    .producto-grid-2,
+    .producto-grid-image{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .campo-modal textarea{
+
+        min-height:140px;
+
+    }
+
+}
+
+/* ====================================== */
+/* STOCK INDEFINIDO */
+/* ====================================== */
+
+.stock-indefinido-box{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    padding:18px 10px;
+
+    gap:8px;
+
+}
+
+.stock-infinity-icon{
+
+    width:55px;
+    height:55px;
+
+    border-radius:50%;
+
+    background:#efe4ff;
+
+    color:#7c3aed;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    font-size:30px;
+    font-weight:700;
+
+}
+
+.stock-indefinido-box p{
+
+    margin:0;
+
+    color:#6b21a8;
+
+    font-size:14px;
+
+    font-weight:600;
+
 }

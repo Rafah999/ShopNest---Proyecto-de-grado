@@ -330,49 +330,60 @@
 
 .productos-slider-wrapper{
 
-    display:flex;
-    align-items:center;
-    gap:14px;
+    position:relative;
+
+    width:100%;
+
+    overflow:hidden;
+
 }
 
 .productos-slider{
 
     display:flex;
 
-    gap:20px;
+    gap:22px;
 
     overflow-x:auto;
 
     scroll-behavior:smooth;
 
-    width:100%;
+    scrollbar-width:none;
 
-    padding:8px 0 12px;
+    -webkit-overflow-scrolling:touch;
+
+    padding:10px 5px;
+
 }
 
 .productos-slider::-webkit-scrollbar{
-
     display:none;
 }
 
+
+
 .producto-home-card{
 
-    min-width:220px;
+    min-width:280px;
 
-    background:white;
+    flex-shrink:0;
 
-    border:1px solid #e8e8e8;
+    transition:
+    transform .25s ease,
+    box-shadow .25s ease;
 
-    border-radius:18px;
+}
+.producto-home-card{
 
-    overflow:hidden;
+    min-width:280px;
 
-    text-decoration:none;
+    flex-shrink:0;
 
-    transition:.25s ease;
+}
+.producto-home-card:hover{
 
-    box-shadow:
-    0 4px 14px rgba(0,0,0,.04);
+    transform:translateY(-4px);
+
 }
 
 .producto-home-card:hover{
@@ -452,4 +463,306 @@
 .productos-arrow:hover{
 
     transform:scale(1.05);
+}
+
+/* ====================================== */
+/* SLIDER PRODUCTOS */
+/* ====================================== */
+
+.productos-slider-wrapper{
+
+    position: relative;
+
+    width: 100%;
+
+    overflow: hidden;
+
+    display: flex;
+
+    align-items: center;
+
+}
+
+.productos-slider{
+
+    display: flex;
+
+    gap: 22px;
+
+    overflow-x: auto;
+
+    scroll-behavior: smooth;
+
+    scrollbar-width: none;
+
+    -webkit-overflow-scrolling: touch;
+
+    width: 100%;
+
+    padding: 10px 5px 20px;
+
+}
+
+.productos-slider::-webkit-scrollbar{
+
+    display: none;
+
+}
+
+.producto-home-card{
+
+    min-width: 280px;
+
+    max-width: 280px;
+
+    flex: 0 0 auto;
+
+}
+
+/* FLECHAS */
+
+.productos-arrow{
+
+    position: absolute;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    z-index: 20;
+
+    width: 50px;
+
+    height: 50px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: white;
+
+    cursor: pointer;
+
+    font-size: 24px;
+
+    box-shadow: 0 8px 18px rgba(0,0,0,.15);
+
+}
+
+.productos-arrow.left{
+
+    left: -5px;
+
+}
+
+.productos-arrow.right{
+
+    right: -5px;
+
+}
+
+
+/* ========================= */
+/* INFO EMPRENDIMIENTO */
+/* ========================= */
+
+.emp-info-box{
+
+    width:100%;
+
+    background:white;
+
+    border-radius:24px;
+
+    overflow:hidden;
+
+    margin:30px 0;
+
+    box-shadow:
+    0 8px 24px rgba(0,0,0,.06);
+
+}
+
+/* HEADER */
+
+.emp-info-header{
+
+    height:70px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #efb2ff,
+        #d88bff
+    );
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+.emp-info-title{
+
+    font-size:22px;
+
+    font-weight:700;
+
+    color:white;
+
+}
+
+/* BODY */
+
+.emp-info-body{
+
+    padding:24px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:30px;
+
+    flex-wrap:wrap;
+
+}
+
+/* DESCRIPCION */
+
+.emp-description{
+
+    flex:1;
+
+    min-width:280px;
+
+    font-size:15px;
+
+    line-height:1.7;
+
+    color:#444;
+
+}
+
+/* LADO DERECHO */
+
+.emp-side-info{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:22px;
+
+    flex-wrap:wrap;
+
+}
+
+/* FOLLOWERS */
+
+.emp-followers{
+
+    background:#f5ebff;
+
+    color:#7c31dd;
+
+    padding:10px 16px;
+
+    border-radius:40px;
+
+    font-weight:700;
+
+    white-space:nowrap;
+
+}
+
+/* RATING */
+
+.emp-rating{
+
+    display:flex;
+
+    gap:5px;
+
+    font-size:22px;
+
+    color:#ffd34d;
+
+}
+
+/* BOTON */
+
+.follow-btn{
+
+    border:none;
+
+    padding:13px 22px;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #8f35e8,
+        #b548ea
+    );
+
+    color:white;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    white-space:nowrap;
+
+    box-shadow:
+    0 8px 18px rgba(143,53,232,.16);
+
+}
+
+.follow-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+.follow-btn.following{
+
+    background:
+    linear-gradient(
+        135deg,
+        #ff7c7c,
+        #ff4f6f
+    );
+
+}
+
+/* RESPONSIVE */
+
+@media(max-width:850px){
+
+    .emp-info-body{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+    .emp-side-info{
+
+        width:100%;
+
+        justify-content:space-between;
+
+    }
+
 }

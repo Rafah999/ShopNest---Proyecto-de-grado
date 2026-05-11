@@ -208,6 +208,9 @@ class Producto(models.Model):
     )
     imagen = models.ImageField(upload_to="productos/")
     stock = models.PositiveIntegerField(default=0)
+    stock_indefinido = models.BooleanField(
+        default=False
+    )
 
     visible = models.BooleanField(default=True)
 

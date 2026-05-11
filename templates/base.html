@@ -12,9 +12,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    
 
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
     <style>
 
         .custom-brand{
@@ -142,24 +147,57 @@
             </div>
 
             <div class="drawer-body">
-                <a href="{% url 'perfil' %}">Perfil</a>
 
-                <a href="javascript:void(0);" id="openNotiDrawer" class="noti-link">
-                    Notificaciones
-                    <span class="noti-count drawer-count" id="notiCount">0</span>
+                <a href="{% url 'perfil' %}" class="drawer-btn">
+                    <span>Perfil</span>
+                    <i class="fa-regular fa-user"></i>
+
+                </a>
+
+                <a
+                    href="javascript:void(0);"
+                    id="openNotiDrawer"
+                    class="drawer-btn"
+                >
+                    <span>Notificaciones</span>
+                    <i class="fa-regular fa-bell"></i>
+
+                    <span class="noti-count drawer-count" id="notiCount">
+                        0
+                    </span>
                 </a>
 
                 {% if user.es_emprendedor %}
-                    <a href="{% url 'mi_emprendimiento' %}">Mi Emprendimiento</a>
+                    <a
+                        href="{% url 'mi_emprendimiento' %}"
+                        class="drawer-btn"
+                    >
+                        <div class="drawer-left">
+                            <span>Mi emprendimiento</span>
+                            <i class="fa-solid fa-shop"></i>
+                        </div>
+                    </a>
                 {% endif %}
 
                 {% if user.is_superuser or user.is_staff or user.is_admin_manual %}
-                    <a href="{% url 'admin_dashboard' %}">Admin Panel</a>
+                    <a
+                        href="{% url 'admin_dashboard' %}"
+                        class="drawer-btn"
+                    >
+                        <span>Admin Panel</span>
+                        <i class="fa-solid fa-gear"></i>
+                    </a>
                 {% endif %}
 
-                <a href="{% url 'logout' %}">Cerrar sesión</a>
-            </div>
+                <a
+                    href="{% url 'logout' %}"
+                    class="drawer-btn logout-btn"
+                >
+                    <span>Cerrar sesión</span>
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
 
+            </div>
         </div>
     </div>
 

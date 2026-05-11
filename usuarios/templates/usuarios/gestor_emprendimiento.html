@@ -191,14 +191,22 @@
                         <div class="stock-header">
 
                             <label>
-                                Stock disponible
+                                Disponibilidad
                             </label>
 
                             <span class="stock-status">
-                                {{ producto.stock }} unidades
+
+                                {% if producto.stock_indefinido %}
+                                    Indefinido
+                                {% else %}
+                                    {{ producto.stock }} unidades
+                                {% endif %}
+
                             </span>
 
                         </div>
+
+                        {% if not producto.stock_indefinido %}
 
                         <div class="stock-controls">
 
@@ -227,11 +235,31 @@
 
                         </div>
 
-                        <button class="save-stock-btn" onclick="saveStock('{{ producto.id }}', this)">
+                        <button
+                            class="save-stock-btn"
+                            onclick="saveStock('{{ producto.id }}', this)"
+                        >
                             Actualizar stock
                         </button>
 
+                        {% else %}
+
+                        <div class="stock-indefinido-box">
+
+                            <span class="stock-infinity-icon">
+                                ∞
+                            </span>
+
+                            <p>
+                                Producto disponible bajo pedido
+                            </p>
+
+                        </div>
+
+                        {% endif %}
+
                     </div>
+
 
                    
 
@@ -302,98 +330,63 @@
     <div class="producto-modal-content">
 
         <h3>Agregar un Producto</h3>
-
-        <form
-            method="POST"
-            enctype="multipart/form-data"
-            id="productoForm"
-        >
-
-            {% csrf_token %}
-
-            <input
-                type="hidden"
-                name="tipo"
-                value="producto"
-            >
-
-            <!-- NOMBRE -->
-            <div class="campo-modal">
-
-                <label>Nombre del producto</label>
-
-                {{ producto_form.nombre }}
-
-            </div>
-
-            <!-- IMAGEN -->
-            <div class="campo-modal">
-
-                <label>Imagen del producto</label>
-
-                <label class="image-preview-modal upload-product-img">
-
-                    <span id="textoPreviewProducto">
-                        Agregar Imagen
-                    </span>
-
-                    <img
-                        id="imgPreviewProducto"
-                        style="display:none;"
-                    >
-
-                    <input
-                        type="file"
-                        name="imagen"
-                        id="productoImagenInput"
-                        hidden
-                        accept="image/*"
-                        onchange="previewProducto(event)"
-                    >
-
-                </label>
-
-            </div>
-
-            <!-- DESCRIPCION -->
-            <div class="campo-modal">
-
-                <label>Descripcion del producto</label>
-
-                {{ producto_form.descripcion }}
-
-            </div>
-
-            <!-- PRECIO -->
-            <div class="campo-modal">
-
-                <label>Precio</label>
-
-                {{ producto_form.precio }}
-
-            </div>
-
-            <!-- CATEGORIA -->
-            <div class="campo-modal">
-
-                <label>Categoría</label>
-
-                {{ producto_form.categoria }}
-
-            </div>
-
-            <button
-                type="submit"
-                class="guardar-btn"
-            >
-                Guardar producto
-            </button>
-
-        </form>
+        {% include "includes/form_producto.html" %}
 
     </div>
 
 </div>
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const radios =
+    document.querySelectorAll(
+        'input[name="tipo_stock"]'
+    );
+
+    const stockBox =
+    document.getElementById("stockBox");
+
+    const stockInput =
+    document.querySelector(
+        '[name="stock"]'
+    );
+
+    function toggleStock(){
+
+        const selected =
+        document.querySelector(
+            'input[name="tipo_stock"]:checked'
+        ).value;
+
+        if(selected === "indefinido"){
+
+            stockBox.style.display = "none";
+
+            stockInput.value = 0;
+
+        }else{
+
+            stockBox.style.display = "block";
+
+        }
+
+    }
+
+    radios.forEach(radio => {
+
+        radio.addEventListener(
+            "change",
+            toggleStock
+        );
+
+    });
+
+    toggleStock();
+
+});
+
+</script>
 
 <script>
 
@@ -446,6 +439,60 @@ function previewProducto(event){
 }
 
 </script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const radios =
+    document.querySelectorAll(
+        'input[name="tipo_stock"]'
+    );
+
+    const stockBox =
+    document.getElementById("stockBox");
+
+    const stockInput =
+    document.querySelector(
+        '[name="stock"]'
+    );
+
+    function toggleStock(){
+
+        const selected =
+        document.querySelector(
+            'input[name="tipo_stock"]:checked'
+        ).value;
+
+        if(selected === "indefinido"){
+
+            stockBox.style.display = "none";
+
+            stockInput.value = 0;
+
+        }else{
+
+            stockBox.style.display = "block";
+
+        }
+
+    }
+
+    radios.forEach(radio => {
+
+        radio.addEventListener(
+            "change",
+            toggleStock
+        );
+
+    });
+
+    toggleStock();
+
+});
+
+</script>
+
 <script>
 
 let currentSlide = 0;

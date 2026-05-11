@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'usuarios',
+    'social',
 ]
 
 AUTH_USER_MODEL = 'usuarios.CustomUser'

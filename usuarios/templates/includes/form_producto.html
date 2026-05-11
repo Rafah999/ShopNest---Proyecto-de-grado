@@ -1,0 +1,140 @@
+<form
+    method="POST"
+    enctype="multipart/form-data"
+    id="productoForm"
+>
+
+    {% csrf_token %}
+
+    <input
+        type="hidden"
+        name="tipo"
+        value="producto"
+    >
+
+    <!-- FILA 1 -->
+    <div class="producto-grid-2">
+
+        <!-- NOMBRE -->
+        <div class="campo-modal">
+
+            <label>Nombre del producto</label>
+
+            {{ producto_form.nombre }}
+
+        </div>
+
+        <!-- CATEGORIA -->
+        <div class="campo-modal">
+
+            <label>Categoría</label>
+
+            {{ producto_form.categoria }}
+
+        </div>
+
+    </div>
+
+    <!-- FILA 2 -->
+    <div class="producto-grid-2">
+
+        <!-- PRECIO -->
+        <div class="campo-modal">
+
+            <label>Precio</label>
+
+            {{ producto_form.precio }}
+
+        </div>
+
+        <!-- TIPO STOCK -->
+        <div class="campo-modal">
+
+            <label>Tipo de existencias</label>
+
+            <div class="stock-type-box">
+
+                <label class="stock-option">
+
+                    <input
+                        type="radio"
+                        name="tipo_stock"
+                        value="definido"
+                        checked
+                    >
+
+                    Cantidad definida
+
+                </label>
+
+                <label class="stock-option">
+
+                    <input
+                        type="radio"
+                        name="tipo_stock"
+                        value="indefinido"
+                    >
+
+                    Bajo pedido
+
+                </label>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FILA 3 -->
+    <div class="producto-grid-image">
+
+        <!-- IMAGEN -->
+        <div class="campo-modal">
+
+            <label>Imagen del producto</label>
+
+            <label
+                class="image-preview-modal upload-product-img"
+            >
+
+                <span id="textoPreviewProducto">
+                    Agregar Imagen
+                </span>
+
+                <img
+                    id="imgPreviewProducto"
+                    style="display:none;"
+                >
+
+                <input
+                    type="file"
+                    name="imagen"
+                    hidden
+                    accept="image/*"
+                    onchange="previewProducto(event)"
+                >
+
+            </label>
+
+        </div>
+
+        <!-- DESCRIPCION -->
+        <div class="campo-modal">
+
+            <label>Descripción del producto</label>
+
+            {{ producto_form.descripcion }}
+
+        </div>
+
+    </div>
+
+    <!-- BOTON -->
+    <button
+        type="submit"
+        class="guardar-btn"
+    >
+        Guardar producto
+    </button>
+
+</form>

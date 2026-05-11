@@ -260,91 +260,117 @@
     <div class="producto-modal-content">
 
         <h3>Agregar un Producto</h3>
-
-        <form
-            method="POST"
-            enctype="multipart/form-data"
-            id="productoForm"
-        >
-
-            {% csrf_token %}
-
-            <input type="hidden" name="tipo" value="producto">
-
-            <div class="campo-modal">
-
-                <label>Nombre del producto</label>
-
-                {{ producto_form.nombre }}
-
-            </div>
-
-            <div class="campo-modal">
-
-                <label>Imagen del producto</label>
-
-                <label class="image-preview-modal upload-product-img">
-
-                    <span id="textoPreviewProducto">
-                        Subir imagen
-                    </span>
-
-                    <img
-                    id="imgPreviewProducto"
-                    style="display:none; position:absolute; inset:0;"
-                    >
-
-                    <!-- IMPORTANTE -->
-                    <input
-                        type="file"
-                        name="imagen"
-                        id="productoImagenInput"
-                        hidden
-                        accept="image/*"
-                        required
-                        onchange="previewProducto(event)"
-                    >
-
-                </label>
-
-            </div>
-
-            <div class="campo-modal">
-
-                <label>Descripción del producto</label>
-
-                {{ producto_form.descripcion }}
-
-            </div>
-
-            <div class="campo-modal">
-
-                <label>Precio</label>
-
-                {{ producto_form.precio }}
-
-            </div>
-
-            <!-- CATEGORIA OCULTA -->
-            <div class="campo-modal">
-
-                <label>Categoría</label>
-
-                {{ producto_form.categoria }}
-
-            </div>
-            <button
-                type="submit"
-                class="config-btn modal-save-btn"
-            >
-                Guardar producto
-            </button>
-
-        </form>
+        {% include "includes/form_producto.html" %}
 
     </div>
 
 </div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const radios =
+    document.querySelectorAll(
+        'input[name="tipo_stock"]'
+    );
+
+    const stockBox =
+    document.getElementById("stockBox");
+
+    const stockInput =
+    document.querySelector(
+        '[name="stock"]'
+    );
+
+    function toggleStock(){
+
+        const selected =
+        document.querySelector(
+            'input[name="tipo_stock"]:checked'
+        ).value;
+
+        if(selected === "indefinido"){
+
+            stockBox.style.display = "none";
+
+            stockInput.value = 0;
+
+        }else{
+
+            stockBox.style.display = "block";
+
+        }
+
+    }
+
+    radios.forEach(radio => {
+
+        radio.addEventListener(
+            "change",
+            toggleStock
+        );
+
+    });
+
+    toggleStock();
+
+});
+
+</script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const radios =
+    document.querySelectorAll(
+        'input[name="tipo_stock"]'
+    );
+
+    const stockBox =
+    document.getElementById("stockBox");
+
+    const stockInput =
+    document.querySelector(
+        '[name="stock"]'
+    );
+
+    function toggleStock(){
+
+        const selected =
+        document.querySelector(
+            'input[name="tipo_stock"]:checked'
+        ).value;
+
+        if(selected === "indefinido"){
+
+            stockBox.style.display = "none";
+
+            stockInput.value = 0;
+
+        }else{
+
+            stockBox.style.display = "block";
+
+        }
+
+    }
+
+    radios.forEach(radio => {
+
+        radio.addEventListener(
+            "change",
+            toggleStock
+        );
+
+    });
+
+    toggleStock();
+
+});
+
+</script>
 
 <script>
 

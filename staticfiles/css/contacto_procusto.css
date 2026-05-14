@@ -1,0 +1,123 @@
+.contacto-wrapper{
+    width: 95%;
+    max-width: 1000px;
+    margin: 30px auto 60px;
+}
+
+.contacto-header-box{
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.back-btn{
+    width: 62px;
+    height: 50px;
+    background: #e4b3ef;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #222;
+    font-size: 32px;
+    font-weight: 500;
+}
+
+.contacto-title{
+    flex: 1;
+    background: #e4b3ef;
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.producto-resumen{
+    display: flex;
+    gap: 20px;
+    background: white;
+    padding: 25px;
+    border-radius: 22px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    margin-bottom: 30px;
+}
+
+.producto-img{
+    width: 180px;
+    height: 180px;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #f1f1f1;
+}
+
+.producto-img img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.producto-info{
+    flex: 1;
+}
+
+.producto-info h2{
+    margin-bottom: 8px;
+    font-size: 28px;
+}
+
+.producto-info p{
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.producto-info strong{
+    color: #7c3aed;
+    font-size: 24px;
+}
+
+.contacto-form{
+    background: white;
+    padding: 30px;
+    border-radius: 22px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.08);
+}
+
+.campo{
+    margin-bottom: 24px;
+}
+
+.campo label{
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: #4c1d95;
+}
+
+.campo select,
+.campo textarea{
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: 2px solid #dcc7ff;
+    font-size: 15px;
+    outline: none;
+    font-family: inherit;
+}
+
+.campo textarea{
+    resize: vertical;
+}
+
+.enviar-btn{
+    width: 100%;
+    border: none;
+    border-radius: 16px;
+    padding: 15px;
+    background: linear-gradient(135deg, #8f35e8, #b548ea);
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}

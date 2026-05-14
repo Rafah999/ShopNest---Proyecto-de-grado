@@ -9,7 +9,6 @@
 
 <div class="producto-view-wrapper">
 
-    <!-- TITULO -->
     <!-- HEADER -->
     <div class="view-header">
 
@@ -26,7 +25,7 @@
 
     </div>
 
-    <!-- INFO -->
+    <!-- INFORMACIÓN DEL PRODUCTO -->
     <div class="producto-main-box">
 
         <!-- IZQUIERDA -->
@@ -37,7 +36,7 @@
             </div>
 
             <div class="producto-field">
-                <label>Descripcion:</label>
+                <label>Descripción:</label>
 
                 <div class="fake-input">
                     {{ producto.descripcion }}
@@ -51,7 +50,7 @@
 
                     {% if producto.stock_indefinido %}
 
-                        Indefinido, la cantidad la puedes definir en el pedido con el vendedor
+                        Indefinido, la cantidad la puedes definir en el pedido con el vendedor.
 
                     {% else %}
 
@@ -62,17 +61,21 @@
                 </div>
             </div>
 
-           
-
             <div class="producto-buttons">
 
-                <button>
+                <a
+                    href="{% url 'contacto_producto' producto.id %}?tipo=pedido"
+                    class="producto-action-btn"
+                >
                     Hacer pedido
-                </button>
+                </a>
 
-                <button>
-                    Contactar al Vendedor
-                </button>
+                <a
+                    href="{% url 'contacto_producto' producto.id %}"
+                    class="producto-action-btn"
+                >
+                    Contactar al vendedor
+                </a>
 
             </div>
 
@@ -82,7 +85,7 @@
         <div class="producto-right">
 
             {% if producto.imagen %}
-                <img src="{{ producto.imagen.url }}">
+                <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
             {% endif %}
 
         </div>
@@ -93,7 +96,7 @@
     <div class="map-section">
 
         <div class="map-title">
-            Como encontrar El local
+            Cómo encontrar el local
         </div>
 
         <div class="map-box">
@@ -106,7 +109,7 @@
 
     </div>
 
-    <!-- RELACIONADOS -->
+    <!-- PRODUCTOS RELACIONADOS -->
     <div class="related-section">
 
         <div class="related-title">
@@ -125,7 +128,7 @@
                     <div class="related-img-box">
 
                         {% if p.imagen %}
-                            <img src="{{ p.imagen.url }}">
+                            <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}">
                         {% endif %}
 
                     </div>

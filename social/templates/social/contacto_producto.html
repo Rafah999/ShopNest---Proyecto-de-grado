@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/contacto_producto.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="contacto-wrapper">
+
+    <div class="contacto-header-box">
+        <a href="javascript:history.back()" class="back-btn">←</a>
+
+        <div class="contacto-title">
+            Contactar vendedor
+        </div>
+    </div>
+
+    <div class="producto-resumen">
+
+        <div class="producto-img">
+            {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}">
+            {% endif %}
+        </div>
+
+        <div class="producto-info">
+            <h2>{{ producto.nombre }}</h2>
+            <p>{{ producto.emprendimiento.nombre }}</p>
+            <strong>${{ producto.precio }}</strong>
+        </div>
+
+    </div>
+
+    <form method="POST" class="contacto-form">
+        {% csrf_token %}
+
+        <div class="campo">
+            <label>¿Qué necesitas?</label>
+
+            <select name="tipo" required>
+
+                <option value="">Selecciona una opción</option>
+
+                <option value="pedido"
+                    {% if tipo_preseleccionado == "pedido" %}selected{% endif %}>
+                    Hacer pedido
+                </option>
+
+                <option value="disponibilidad">
+                    Consultar disponibilidad
+                </option>
+
+                <option value="personalizacion">
+                    Consultar personalización
+                </option>
+
+                <option value="pago">
+                    Métodos de pago
+                </option>
+
+                <option value="chat">
+                    Hablar con el vendedor
+                </option>
+
+            </select>
+        </div>
+
+        <div class="campo">
+            <label>Mensaje adicional (opcional)</label>
+
+            <textarea
+                name="mensaje"
+                rows="6"
+                placeholder="Escribe tu solicitud..."
+            ></textarea>
+        </div>
+
+        <button type="submit" class="enviar-btn">
+            Enviar solicitud
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

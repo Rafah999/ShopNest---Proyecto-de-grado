@@ -1,0 +1,178 @@
+/* =========================
+   AUTH PAGE
+========================= */
+.auth-page {
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* layout */
+.auth-wrapper {
+    display: flex;
+    height: calc(100vh - 70px);
+}
+
+/* =========================
+   LEFT PANEL (FORM)
+========================= */
+.auth-left {
+    width: 420px;
+    min-width: 380px;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+
+    box-shadow: 5px 0 20px rgba(0,0,0,0.1);
+    z-index: 2;
+}
+
+.auth-box {
+    width: 100%;
+}
+
+.auth-box h2 {
+    font-size: 28px;
+    color: #6a1b9a;
+}
+
+.auth-sub {
+    color: #777;
+    margin-bottom: 25px;
+}
+
+.auth-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.auth-box input {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.auth-box button {
+    background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.auth-box button:hover {
+    background: linear-gradient(135deg, #8e24aa, #ab47bc);
+}
+
+.auth-link {
+    margin-top: 15px;
+}
+
+.auth-link a {
+    color: #6a1b9a;
+    font-weight: bold;
+}
+
+/* =========================
+   RIGHT PANEL (FONDO)
+========================= */
+.auth-right {
+    flex: 1;
+    position: relative;
+    overflow: hidden; /* 🔥 CLAVE */
+}
+
+/* =========================
+   CAROUSEL
+========================= */
+.carousel {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+.slide {
+    position: absolute;
+    inset: 0;
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; /* 🔥 SOLUCIÓN BUG */
+
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+/* overlay */
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+/* =========================
+   ERROR
+========================= */
+.login-error {
+    background: #ffd6d6;
+    color: #a10000;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 900px) {
+    .auth-wrapper {
+        flex-direction: column;
+    }
+
+    .auth-left {
+        width: 100%;
+    }
+
+    .auth-right {
+        display: none;
+    }
+}
+
+.login-error {
+    background: #ffebee;
+    color: #c62828;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.auth-box input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.auth-box input:focus {
+    outline: none;
+    border-color: #8e24aa;
+}

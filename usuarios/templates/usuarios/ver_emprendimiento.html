@@ -116,6 +116,7 @@
                 {% if siguiendo %}
 
                 <button
+                    type="button"
                     class="follow-btn following"
                     onclick="openUnfollowModal()"
                 >
@@ -124,9 +125,12 @@
 
                 {% else %}
 
-                <button class="follow-btn">
-                    Seguir emprendimiento
-                </button>
+                <form method="POST" action="{% url 'toggle_seguimiento' emprendimiento.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="follow-btn">
+                        Seguir emprendimiento
+                    </button>
+                </form>
 
                 {% endif %}
 
@@ -167,11 +171,15 @@
                     Cancelar
                 </button>
 
-                <button
-                    class="confirm-unfollow"
-                >
-                    Confirmar
-                </button>
+                <form method="POST" action="{% url 'toggle_seguimiento' emprendimiento.id %}">
+                    {% csrf_token %}
+                    <button
+                        type="submit"
+                        class="confirm-unfollow"
+                    >
+                        Confirmar
+                    </button>
+                </form>
 
             </div>
 

@@ -1552,3 +1552,76 @@
     font-weight:600;
 
 }
+
+/* ====================================== */
+/* EDITAR CARRUSEL */
+/* ====================================== */
+
+.carousel-slide{
+    position: relative;
+}
+
+.edit-carousel-form{
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: none;
+    z-index: 20;
+}
+
+.editando-carrusel .edit-carousel-form{
+    display: block;
+}
+
+.edit-carousel-btn{
+    background: rgba(0,0,0,.75);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    backdrop-filter: blur(6px);
+}
+
+.edit-carousel-btn:hover{
+    background: rgba(0,0,0,.9);
+}
+
+.editar-btn{
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 16px;
+    background: #f3e6ff;
+    color: #7d2ce2;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.editar-btn:hover{
+    background: #ead5ff;
+}
+.upload-product-img{
+    position: relative;
+}
+
+.upload-product-img::after{
+    content: "✏️ Cambiar imagen";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,.75);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 10px;
+    border-radius: 10px;
+    opacity: 0;
+    transition: .2s;
+}
+
+.upload-product-img:hover::after{
+    opacity: 1;
+}

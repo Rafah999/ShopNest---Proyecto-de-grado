@@ -39,6 +39,19 @@
 
                     <img src="{{ img.imagen.url }}">
 
+                    <form method="post" enctype="multipart/form-data" action="{% url 'editar_img_carrusel' img.id %}" class="edit-carousel-form">
+                        {% csrf_token %}
+                        <label class="edit-carousel-btn">
+                            <i class="fa-regular fa-solid fa-pen"></i>
+                            Editar
+                            <input type="file"
+                                    name="imagen"
+                                    hidden
+                                    accept="image/*"
+                                    onchange="this.form.submit()">
+                        </label>
+                    </form>
+
                 </div>
 
                 {% endfor %}
@@ -71,6 +84,7 @@
         <button
             type="button"
             class="purple-btn"
+            onclick="toggleModoEdicionCarrusel()"
         >
             Editar imágenes de carrusel
         </button>
@@ -299,7 +313,19 @@
                     
 
                     <!-- EDITAR -->
-                    <button class="editar-btn">
+                    <button
+                        type="button"
+                        class="editar-btn"
+                        onclick='abrirEditarProducto(
+                            {{ producto.id }},
+                            "{{ producto.nombre|escapejs }}",
+                            "{{ producto.categoria.id }}",
+                            "{{ producto.precio }}",
+                            "{{ producto.descripcion|escapejs }}",
+                            {% if producto.stock_indefinido %}true{% else %}false{% endif %},
+                            "{% if producto.imagen %}{{ producto.imagen.url }}{% endif %}"
+                        )'
+                    >
                         Editar
                     </button>
 
@@ -329,360 +355,189 @@
 
     <div class="producto-modal-content">
 
-        <h3>Agregar un Producto</h3>
+        <h3 id="productoModalTitle">Agregar un Producto</h3>
         {% include "includes/form_producto.html" %}
 
     </div>
 
 </div>
-<script>
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    const radios =
-    document.querySelectorAll(
-        'input[name="tipo_stock"]'
-    );
-
-    const stockBox =
-    document.getElementById("stockBox");
-
-    const stockInput =
-    document.querySelector(
-        '[name="stock"]'
-    );
-
-    function toggleStock(){
-
-        const selected =
-        document.querySelector(
-            'input[name="tipo_stock"]:checked'
-        ).value;
-
-        if(selected === "indefinido"){
-
-            stockBox.style.display = "none";
-
-            stockInput.value = 0;
-
-        }else{
-
-            stockBox.style.display = "block";
-
-        }
-
-    }
-
-    radios.forEach(radio => {
-
-        radio.addEventListener(
-            "change",
-            toggleStock
-        );
-
-    });
-
-    toggleStock();
-
-});
-
-</script>
+<!-- REEMPLAZA TODO EL BLOQUE <script> FINAL POR ESTE -->
+<!-- Este bloque corrige la carga de todos los datos en el modal -->
+<!-- Basado en el template que compartiste :contentReference[oaicite:0]{index=0} -->
 
 <script>
+const productoModal = document.getElementById("productoModal");
+const productoForm = document.getElementById("productoForm");
+const productoModalTitle = document.getElementById("productoModalTitle");
+const openProductoModal = document.getElementById("openProductoModal");
 
-const productoModal =
-document.getElementById("productoModal");
-
-const openProductoModal =
-document.getElementById("openProductoModal");
-
-openProductoModal.addEventListener("click", () => {
-
-    productoModal.classList.add("active");
-
-    document.body.style.overflow = "hidden";
-
-});
-
-productoModal.addEventListener("click", (e) => {
-
-    if(e.target === productoModal){
-
-        productoModal.classList.remove("active");
-
-        document.body.style.overflow = "auto";
-
-    }
-
-});
-
-function previewProducto(event){
-
+function previewProducto(event) {
     const file = event.target.files[0];
+    const img = document.getElementById("imgPreviewProducto");
+    const texto = document.getElementById("textoPreviewProducto");
 
-    if(file){
-
-        const img =
-        document.getElementById("imgPreviewProducto");
-
-        const texto =
-        document.getElementById("textoPreviewProducto");
-
+    if (file) {
         img.src = URL.createObjectURL(file);
-
         img.style.display = "block";
-
         texto.style.display = "none";
-
     }
-
 }
 
-</script>
-
-<script>
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    const radios =
-    document.querySelectorAll(
-        'input[name="tipo_stock"]'
+function toggleStock() {
+    const seleccionado = document.querySelector(
+        'input[name="tipo_stock"]:checked'
     );
 
-    const stockBox =
-    document.getElementById("stockBox");
+    if (!seleccionado) return;
 
-    const stockInput =
-    document.querySelector(
-        '[name="stock"]'
-    );
+    const stockBox = document.getElementById("stockBox");
 
-    function toggleStock(){
+    if (!stockBox) return;
 
-        const selected =
-        document.querySelector(
-            'input[name="tipo_stock"]:checked'
-        ).value;
+    if (seleccionado.value === "indefinido") {
+        stockBox.style.display = "none";
+    } else {
+        stockBox.style.display = "block";
+    }
+}
 
-        if(selected === "indefinido"){
+function resetProductoModal() {
+    if (!productoForm) return;
 
-            stockBox.style.display = "none";
+    productoForm.reset();
+    productoForm.action = "";
 
-            stockInput.value = 0;
-
-        }else{
-
-            stockBox.style.display = "block";
-
-        }
-
+    const tipoInput = document.getElementById("productoTipoInput");
+    if (tipoInput) {
+        tipoInput.value = "producto";
     }
 
-    radios.forEach(radio => {
+    if (productoModalTitle) {
+        productoModalTitle.innerText = "Agregar un Producto";
+    }
 
-        radio.addEventListener(
-            "change",
-            toggleStock
-        );
+    const guardarBtn = document.getElementById("guardarProductoBtn");
+    if (guardarBtn) {
+        guardarBtn.innerText = "Guardar producto";
+    }
 
-    });
+    const img = document.getElementById("imgPreviewProducto");
+    const texto = document.getElementById("textoPreviewProducto");
+
+    if (img) {
+        img.src = "";
+        img.style.display = "none";
+    }
+
+    if (texto) {
+        texto.style.display = "flex";
+        texto.innerText = "Agregar Imagen";
+    }
+
+    const radioDefinido = document.querySelector(
+        'input[name="tipo_stock"][value="definido"]'
+    );
+
+    if (radioDefinido) {
+        radioDefinido.checked = true;
+    }
+
+    toggleStock();
+}
+
+function abrirEditarProducto(
+    id,
+    nombre,
+    categoriaId,
+    precio,
+    descripcion,
+    stock,
+    stockIndefinido,
+    imagenUrl
+) {
+    resetProductoModal();
+
+    productoForm.action = `/producto/editar/${id}/`;
+
+    const tipoInput = document.getElementById("productoTipoInput");
+    if (tipoInput) {
+        tipoInput.value = "editar";
+    }
+
+    productoModalTitle.innerText = "Editar Producto";
+
+    const guardarBtn = document.getElementById("guardarProductoBtn");
+    if (guardarBtn) {
+        guardarBtn.innerText = "Guardar cambios";
+    }
+
+    // Cargar datos
+    document.getElementById("id_nombre").value = nombre;
+    document.getElementById("id_categoria").value = categoriaId;
+    document.getElementById("id_precio").value = precio;
+    document.getElementById("id_descripcion").value = descripcion;
+
+    // Tipo de stock
+    if (stockIndefinido) {
+        document.querySelector(
+            'input[name="tipo_stock"][value="indefinido"]'
+        ).checked = true;
+    } else {
+        document.querySelector(
+            'input[name="tipo_stock"][value="definido"]'
+        ).checked = true;
+    }
 
     toggleStock();
 
+    // Imagen actual
+    const img = document.getElementById("imgPreviewProducto");
+    const texto = document.getElementById("textoPreviewProducto");
+
+    if (imagenUrl && imagenUrl.trim() !== "") {
+        img.src = imagenUrl;
+        img.style.display = "block";
+        texto.style.display = "none";
+    }
+
+    // Mostrar modal
+    productoModal.classList.add("active");
+    document.body.style.overflow = "hidden";
+}
+
+// Abrir modal para nuevo producto
+if (openProductoModal) {
+    openProductoModal.addEventListener("click", () => {
+        resetProductoModal();
+        productoModal.classList.add("active");
+        document.body.style.overflow = "hidden";
+    });
+}
+
+// Cerrar modal al hacer click fuera
+if (productoModal) {
+    productoModal.addEventListener("click", (e) => {
+        if (e.target === productoModal) {
+            productoModal.classList.remove("active");
+            document.body.style.overflow = "auto";
+        }
+    });
+}
+
+// Inicialización
+document.addEventListener("DOMContentLoaded", () => {
+    document
+        .querySelectorAll('input[name="tipo_stock"]')
+        .forEach(radio => {
+            radio.addEventListener("change", toggleStock);
+        });
+
+    toggleStock();
 });
 
-</script>
-
-<script>
-
-let currentSlide = 0;
-
-function moveSlide(direction){
-
-    const track =
-    document.getElementById("carouselTrack");
-
-    const slides =
-    document.querySelectorAll(".carousel-slide");
-
-    currentSlide += direction;
-
-    if(currentSlide < 0){
-        currentSlide = slides.length - 1;
-    }
-
-    if(currentSlide >= slides.length){
-        currentSlide = 0;
-    }
-
-    updateCarousel();
-
+// Mostrar/ocultar botones del carrusel
+function toggleModoEdicionCarrusel() {
+    document.body.classList.toggle("editando-carrusel");
 }
-
-function updateCarousel(){
-
-    const slides =
-    document.querySelectorAll(".carousel-slide");
-
-    slides.forEach((slide, index) => {
-
-        slide.classList.remove(
-            "active",
-            "left",
-            "right"
-        );
-
-        if(index === currentSlide){
-
-            slide.classList.add("active");
-
-        }else if(
-            index ===
-            (currentSlide - 1 + slides.length)
-            % slides.length
-        ){
-
-            slide.classList.add("left");
-
-        }else if(
-            index ===
-            (currentSlide + 1)
-            % slides.length
-        ){
-
-            slide.classList.add("right");
-
-        }
-
-    });
-
-}
-
-updateCarousel();
-
-</script>
-<script>
-
-/* ========================= */
-/* STOCK */
-/* ========================= */
-
-function increaseStock(button){
-
-    const input =
-    button.parentElement.querySelector(".stock-input");
-
-    input.value = parseInt(input.value || 0) + 1;
-
-}
-
-function decreaseStock(button){
-
-    const input =
-    button.parentElement.querySelector(".stock-input");
-
-    let current = parseInt(input.value || 0);
-
-    if(current > 0){
-
-        input.value = current - 1;
-
-    }
-
-}
-
-</script>
-<script>
-
-function getCSRFToken() {
-
-    return document.querySelector(
-        '[name=csrfmiddlewaretoken]'
-    ).value;
-
-}
-
-async function saveStock(productoId, btn){
-
-    const card =
-    btn.closest(".producto-card");
-
-    const input =
-    card.querySelector(".stock-input");
-
-    const stock = input.value;
-
-    const formData = new FormData();
-
-    formData.append(
-        "producto_id",
-        productoId
-    );
-
-    formData.append(
-        "stock",
-        stock
-    );
-
-    const response = await fetch(
-        "/actualizar-stock/",
-        {
-            method:"POST",
-            headers:{
-                "X-CSRFToken": getCSRFToken()
-            },
-            body: formData
-        }
-    );
-
-    const data = await response.json();
-
-    if(data.success){
-
-        btn.innerText = "Actualizado";
-
-        setTimeout(() => {
-
-            btn.innerText =
-            "Actualizar stock";
-
-        }, 1200);
-
-        location.reload();
-
-    }
-
-}
-
-async function toggleVisibility(productoId){
-
-    const formData = new FormData();
-
-    formData.append(
-        "producto_id",
-        productoId
-    );
-
-    const response = await fetch(
-        "/toggle-visibility/",
-        {
-            method:"POST",
-            headers:{
-                "X-CSRFToken": getCSRFToken()
-            },
-            body: formData
-        }
-    );
-
-    const data = await response.json();
-
-    if(data.success){
-
-        location.reload();
-
-    }
-
-}
-
 </script>
 {% endblock %}

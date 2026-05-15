@@ -1,5 +1,5 @@
 from pyexpat.errors import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model, authenticate, login
@@ -372,6 +372,7 @@ def mi_emprendimiento(request):
     })
 
 
+
 @login_required
 def gestor_emprendimiento(request):
 
@@ -381,25 +382,27 @@ def gestor_emprendimiento(request):
         publicado=True
     ).first()
 
-    total_seguidores = Seguimiento.objects.filter(
-        emprendimiento=emprendimiento
-        ).count()
-
     if not emprendimiento:
         return redirect("crear_emprendimiento")
 
-    productos = emprendimiento.productos.all()
-    imagenes = emprendimiento.imagenes.all()
+    total_seguidores = Seguimiento.objects.filter(
+        emprendimiento=emprendimiento
+    ).count()
+
+    productos = list(
+        emprendimiento.productos.select_related("categoria").all()
+    )
+
+    imagenes = list(
+        emprendimiento.imagenes.all()
+    )
 
     producto_form = ProductoForm(
         initial={
-            "categoria": emprendimiento.categoria
+            "categoria": emprendimiento.categoria_id
         }
     )
 
-    # =========================
-    # REGISTRAR PRODUCTO
-    # =========================
     if request.method == "POST":
 
         tipo = request.POST.get("tipo")
@@ -416,32 +419,31 @@ def gestor_emprendimiento(request):
                 emprendimiento.save()
 
         # =========================
-        # IMÁGENES
+        # IMÁGENES DEL CARRUSEL
         # =========================
         elif tipo == "imagenes":
 
             archivos = request.FILES.getlist("imagenes")
 
             for archivo in archivos:
-
                 EmprendimientoImagen.objects.create(
                     emprendimiento=emprendimiento,
                     imagen=archivo
                 )
 
         # =========================
-        # PRODUCTOS
+        # CREAR PRODUCTO
         # =========================
         elif tipo == "producto":
 
-            producto_form = ProductoForm(
+            form_producto = ProductoForm(
                 request.POST,
                 request.FILES
             )
 
-            if producto_form.is_valid():
+            if form_producto.is_valid():
 
-                producto = producto_form.save(commit=False)
+                producto = form_producto.save(commit=False)
 
                 tipo_stock = request.POST.get("tipo_stock")
 
@@ -450,28 +452,29 @@ def gestor_emprendimiento(request):
                     producto.stock = 99999999
                 else:
                     producto.stock_indefinido = False
+                    producto.stock = 0
 
                 producto.emprendimiento = emprendimiento
-
                 producto.save()
+
+                print("Producto creado correctamente:", producto.nombre)
+
+            else:
+                print("ERRORES AL CREAR PRODUCTO:")
+                print(form_producto.errors)
 
         # =========================
         # PUBLICAR
         # =========================
         elif tipo == "publicar":
 
-            total_imagenes = imagenes.count()
-            total_productos = productos.count()
-
             if (
                 emprendimiento.logo and
-                total_imagenes >= 5 and
-                total_productos >= 3
+                imagenes.count() >= 5 and
+                productos.count() >= 3
             ):
-
                 emprendimiento.publicado = True
                 emprendimiento.estado = "aprobado"
-
                 emprendimiento.save()
 
                 request.user.es_emprendedor = True
@@ -481,11 +484,12 @@ def gestor_emprendimiento(request):
 
     puede_publicar = (
         emprendimiento.logo and
-        imagenes.count() >= 5 and
-        productos.count() >= 3
+        len(imagenes) >= 5 and
+        len(productos) >= 3
     )
 
-    return render(request,
+    return render(
+        request,
         "usuarios/gestor_emprendimiento.html",
         {
             "emprendimiento": emprendimiento,
@@ -493,9 +497,11 @@ def gestor_emprendimiento(request):
             "imagenes": imagenes,
             "producto_form": producto_form,
             "puede_publicar": puede_publicar,
-            "total_seguidores": total_seguidores
+            "total_seguidores": total_seguidores,
         }
     )
+
+
 
 
 @login_required
@@ -677,3 +683,86 @@ def categorias(request):
             "categorias": categorias
         }
     )
+    
+    
+    
+
+@login_required
+def editar_producto(request, producto_id):
+    producto = get_object_or_404(
+        Producto,
+        id=producto_id,
+        emprendimiento__usuario=request.user
+    )
+
+    if request.method == "POST":
+
+        nombre = request.POST.get("nombre")
+        descripcion = request.POST.get("descripcion")
+        precio = request.POST.get("precio")
+        categoria_id = request.POST.get("categoria")
+        tipo_stock = request.POST.get("tipo_stock")
+        nueva_imagen = request.FILES.get("imagen")
+
+        # =========================
+        # STOCK
+        # =========================
+        if tipo_stock == "indefinido":
+            stock_indefinido = True
+            stock = 99999999
+        else:
+            stock_indefinido = False
+            stock = producto.stock
+
+        # =========================
+        # ACTUALIZAR CAMPOS SIN IMAGEN
+        # =========================
+        Producto.objects.filter(id=producto.id).update(
+            nombre=nombre,
+            descripcion=descripcion,
+            precio=precio,
+            categoria_id=categoria_id,
+            stock=stock,
+            stock_indefinido=stock_indefinido,
+        )
+
+        # =========================
+        # ACTUALIZAR IMAGEN SOLO SI SUBIERON UNA NUEVA
+        # =========================
+        if nueva_imagen:
+            producto.refresh_from_db()
+            producto.imagen = nueva_imagen
+
+            try:
+                producto.save(update_fields=["imagen"])
+                print("Imagen actualizada correctamente.")
+            except Exception as e:
+                print("ERROR AL ACTUALIZAR IMAGEN:", e)
+
+    return redirect("gestor_emprendimiento")
+
+
+
+
+
+@login_required
+def actualizar_imagen_carrusel(request, imagen_id):
+    imagen = get_object_or_404(
+        EmprendimientoImagen,
+        id=imagen_id,
+        emprendimiento__usuario=request.user
+    )
+
+    if request.method == "POST":
+
+        nueva_imagen = request.FILES.get("imagen")
+
+        if nueva_imagen:
+            try:
+                imagen.imagen = nueva_imagen
+                imagen.save(update_fields=["imagen"])
+                print("Imagen del carrusel actualizada.")
+            except Exception as e:
+                print("ERROR AL ACTUALIZAR CARRUSEL:", e)
+
+    return redirect("gestor_emprendimiento")

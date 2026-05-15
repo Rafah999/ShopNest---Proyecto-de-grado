@@ -128,9 +128,7 @@ class EmprendimientoForm(forms.ModelForm):
 class ProductoForm(forms.ModelForm):
 
     class Meta:
-
         model = Producto
-
         fields = [
             "nombre",
             "descripcion",
@@ -140,14 +138,8 @@ class ProductoForm(forms.ModelForm):
         ]
 
         widgets = {
-
             "nombre": forms.TextInput(attrs={
                 "placeholder": "Nombre del producto"
-            }),
-
-            "stock": forms.NumberInput(attrs={
-                "placeholder": "Cantidad disponible",
-                "min": "0"
             }),
 
             "descripcion": forms.Textarea(attrs={
@@ -163,26 +155,5 @@ class ProductoForm(forms.ModelForm):
 
             "imagen": forms.FileInput(attrs={
                 "hidden": True
-            })
-
+            }),
         }
-
-    def clean(self):
-
-        cleaned_data = super().clean()
-
-        tipo_stock = cleaned_data.get("tipo_stock")
-
-        if tipo_stock == "indefinido":
-
-            cleaned_data["stock_indefinido"] = True
-            cleaned_data["stock"] = 999999
-
-        else:
-
-            cleaned_data["stock_indefinido"] = False
-
-            # stock temporal
-            cleaned_data["stock"] = 0
-
-        return cleaned_data

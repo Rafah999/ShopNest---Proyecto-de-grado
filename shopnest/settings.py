@@ -146,7 +146,7 @@ STATICFILES_STORAGE = (
 # MEDIA FILES
 # ======================================================
 MEDIA_URL = "/media/"
-MEDIA_ROOT = [BASE_DIR / 'static']
+MEDIA_ROOT = BASE_DIR / 'static'
 
 # ======================================================
 # AUTH REDIRECTS

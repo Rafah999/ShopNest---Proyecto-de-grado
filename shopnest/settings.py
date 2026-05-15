@@ -46,7 +46,19 @@ INSTALLED_APPS = [
     "core",
     "usuarios",
     "social",
+    
+    #cloudinary (imagenes)
+    'cloudinary',
+    'cloudinary_storage',
 ]
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dsqwcmzfk',
+    'API_KEY': '928942341985939',
+    'API_SECRET': 'uGNat5Rs7MoF4taav2TsnJwi9vQ',
+}
 
 AUTH_USER_MODEL = "usuarios.CustomUser"
 
@@ -145,8 +157,8 @@ STATICFILES_STORAGE = (
 # ======================================================
 # MEDIA FILES
 # ======================================================
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / 'static'
+#MEDIA_URL = "/media/"
+#MEDIA_ROOT = BASE_DIR / 'static'
 
 # ======================================================
 # AUTH REDIRECTS

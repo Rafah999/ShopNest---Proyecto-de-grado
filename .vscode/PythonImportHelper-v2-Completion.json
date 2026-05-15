@@ -1114,6 +1114,24 @@
         "documentation": {}
     },
     {
+        "label": "DEFAULT_FILE_STORAGE",
+        "kind": 5,
+        "importPath": "shopnest.settings",
+        "description": "shopnest.settings",
+        "peekOfCode": "DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'\nCLOUDINARY_STORAGE = {\n    'CLOUD_NAME': 'dsqwcmzfk',\n    'API_KEY': '928942341985939',\n    'API_SECRET': 'uGNat5Rs7MoF4taav2TsnJwi9vQ',\n}\nAUTH_USER_MODEL = \"usuarios.CustomUser\"\n# ======================================================\n# MIDDLEWARE\n# ======================================================",
+        "detail": "shopnest.settings",
+        "documentation": {}
+    },
+    {
+        "label": "CLOUDINARY_STORAGE",
+        "kind": 5,
+        "importPath": "shopnest.settings",
+        "description": "shopnest.settings",
+        "peekOfCode": "CLOUDINARY_STORAGE = {\n    'CLOUD_NAME': 'dsqwcmzfk',\n    'API_KEY': '928942341985939',\n    'API_SECRET': 'uGNat5Rs7MoF4taav2TsnJwi9vQ',\n}\nAUTH_USER_MODEL = \"usuarios.CustomUser\"\n# ======================================================\n# MIDDLEWARE\n# ======================================================\nMIDDLEWARE = [",
+        "detail": "shopnest.settings",
+        "documentation": {}
+    },
+    {
         "label": "AUTH_USER_MODEL",
         "kind": 5,
         "importPath": "shopnest.settings",
@@ -1235,7 +1253,7 @@
         "kind": 5,
         "importPath": "shopnest.settings",
         "description": "shopnest.settings",
-        "peekOfCode": "STATIC_ROOT = BASE_DIR / \"staticfiles\"\nSTATICFILES_STORAGE = (\n    \"whitenoise.storage.CompressedManifestStaticFilesStorage\"\n)\n# ======================================================\n# MEDIA FILES\n# ======================================================\nMEDIA_URL = \"/media/\"\nMEDIA_ROOT = BASE_DIR / 'static'\n# ======================================================",
+        "peekOfCode": "STATIC_ROOT = BASE_DIR / \"staticfiles\"\nSTATICFILES_STORAGE = (\n    \"whitenoise.storage.CompressedManifestStaticFilesStorage\"\n)\n# ======================================================\n# MEDIA FILES\n# ======================================================\n#MEDIA_URL = \"/media/\"\n#MEDIA_ROOT = BASE_DIR / 'static'\n# ======================================================",
         "detail": "shopnest.settings",
         "documentation": {}
     },
@@ -1244,25 +1262,25 @@
         "kind": 5,
         "importPath": "shopnest.settings",
         "description": "shopnest.settings",
-        "peekOfCode": "STATICFILES_STORAGE = (\n    \"whitenoise.storage.CompressedManifestStaticFilesStorage\"\n)\n# ======================================================\n# MEDIA FILES\n# ======================================================\nMEDIA_URL = \"/media/\"\nMEDIA_ROOT = BASE_DIR / 'static'\n# ======================================================\n# AUTH REDIRECTS",
+        "peekOfCode": "STATICFILES_STORAGE = (\n    \"whitenoise.storage.CompressedManifestStaticFilesStorage\"\n)\n# ======================================================\n# MEDIA FILES\n# ======================================================\n#MEDIA_URL = \"/media/\"\n#MEDIA_ROOT = BASE_DIR / 'static'\n# ======================================================\n# AUTH REDIRECTS",
         "detail": "shopnest.settings",
         "documentation": {}
     },
     {
-        "label": "MEDIA_URL",
+        "label": "#MEDIA_URL",
         "kind": 5,
         "importPath": "shopnest.settings",
         "description": "shopnest.settings",
-        "peekOfCode": "MEDIA_URL = \"/media/\"\nMEDIA_ROOT = BASE_DIR / 'static'\n# ======================================================\n# AUTH REDIRECTS\n# ======================================================\nLOGIN_URL = \"/login/\"\nLOGIN_REDIRECT_URL = \"/\"\nLOGOUT_REDIRECT_URL = \"/\"\n# ======================================================\n# DEFAULT PRIMARY KEY",
+        "peekOfCode": "#MEDIA_URL = \"/media/\"\n#MEDIA_ROOT = BASE_DIR / 'static'\n# ======================================================\n# AUTH REDIRECTS\n# ======================================================\nLOGIN_URL = \"/login/\"\nLOGIN_REDIRECT_URL = \"/\"\nLOGOUT_REDIRECT_URL = \"/\"\n# ======================================================\n# DEFAULT PRIMARY KEY",
         "detail": "shopnest.settings",
         "documentation": {}
     },
     {
-        "label": "MEDIA_ROOT",
+        "label": "#MEDIA_ROOT",
         "kind": 5,
         "importPath": "shopnest.settings",
         "description": "shopnest.settings",
-        "peekOfCode": "MEDIA_ROOT = BASE_DIR / 'static'\n# ======================================================\n# AUTH REDIRECTS\n# ======================================================\nLOGIN_URL = \"/login/\"\nLOGIN_REDIRECT_URL = \"/\"\nLOGOUT_REDIRECT_URL = \"/\"\n# ======================================================\n# DEFAULT PRIMARY KEY\n# ======================================================",
+        "peekOfCode": "#MEDIA_ROOT = BASE_DIR / 'static'\n# ======================================================\n# AUTH REDIRECTS\n# ======================================================\nLOGIN_URL = \"/login/\"\nLOGIN_REDIRECT_URL = \"/\"\nLOGOUT_REDIRECT_URL = \"/\"\n# ======================================================\n# DEFAULT PRIMARY KEY\n# ======================================================",
         "detail": "shopnest.settings",
         "documentation": {}
     },

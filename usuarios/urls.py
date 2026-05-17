@@ -49,4 +49,15 @@ urlpatterns = [
         views.categorias,
         name="categorias"
     ),
+    path(
+        'producto/editar/<int:producto_id>/',
+        views.editar_producto,
+        name='editar_producto'
+    ),
+    path('imagen-carrusel/editar/<int:imagen_id>/', views.actualizar_imagen_carrusel, name='editar_img_carrusel'),
+    path(
+        "imagen-carrusel/eliminar/<int:imagen_id>/",
+        views.eliminar_imagen_carrusel,
+        name="eliminar_imagen_carrusel"
+    ),
 ]

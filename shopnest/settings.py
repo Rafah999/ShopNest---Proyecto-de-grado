@@ -5,7 +5,7 @@ Django settings for shopnest project.
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-import dj_database_url
+import dj_database_url, cloudinary
 
 # ======================================================
 # BASE DIR
@@ -52,12 +52,19 @@ INSTALLED_APPS = [
     'cloudinary_storage',
 ]
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dsqwcmzfk',
-    'API_KEY': '928942341985939',
-    'API_SECRET': 'uGNat5Rs7MoF4taav2TsnJwi9vQ',
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
+
+CLOUDINARY = {
+    "timeout": 60,
 }
 
 AUTH_USER_MODEL = "usuarios.CustomUser"

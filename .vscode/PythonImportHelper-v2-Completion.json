@@ -512,6 +512,14 @@
         "documentation": {}
     },
     {
+        "label": "get_object_or_404",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
         "label": "render",
         "importPath": "django.shortcuts",
         "description": "django.shortcuts",
@@ -665,12 +673,12 @@
         "documentation": {}
     },
     {
-        "label": "dj_database_url",
+        "label": "dj_database_url,",
         "kind": 6,
         "isExtraImport": true,
-        "importPath": "dj_database_url",
-        "description": "dj_database_url",
-        "detail": "dj_database_url",
+        "importPath": "dj_database_url.",
+        "description": "dj_database_url.",
+        "detail": "dj_database_url.",
         "documentation": {}
     },
     {
@@ -1118,16 +1126,16 @@
         "kind": 5,
         "importPath": "shopnest.settings",
         "description": "shopnest.settings",
-        "peekOfCode": "DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'\nCLOUDINARY_STORAGE = {\n    'CLOUD_NAME': 'dsqwcmzfk',\n    'API_KEY': '928942341985939',\n    'API_SECRET': 'uGNat5Rs7MoF4taav2TsnJwi9vQ',\n}\nAUTH_USER_MODEL = \"usuarios.CustomUser\"\n# ======================================================\n# MIDDLEWARE\n# ======================================================",
+        "peekOfCode": "DEFAULT_FILE_STORAGE = \"cloudinary_storage.storage.MediaCloudinaryStorage\"\ncloudinary.config(\n    cloud_name=os.getenv(\"CLOUDINARY_CLOUD_NAME\"),\n    api_key=os.getenv(\"CLOUDINARY_API_KEY\"),\n    api_secret=os.getenv(\"CLOUDINARY_API_SECRET\"),\n    secure=True\n)\nCLOUDINARY = {\n    \"timeout\": 60,\n}",
         "detail": "shopnest.settings",
         "documentation": {}
     },
     {
-        "label": "CLOUDINARY_STORAGE",
+        "label": "CLOUDINARY",
         "kind": 5,
         "importPath": "shopnest.settings",
         "description": "shopnest.settings",
-        "peekOfCode": "CLOUDINARY_STORAGE = {\n    'CLOUD_NAME': 'dsqwcmzfk',\n    'API_KEY': '928942341985939',\n    'API_SECRET': 'uGNat5Rs7MoF4taav2TsnJwi9vQ',\n}\nAUTH_USER_MODEL = \"usuarios.CustomUser\"\n# ======================================================\n# MIDDLEWARE\n# ======================================================\nMIDDLEWARE = [",
+        "peekOfCode": "CLOUDINARY = {\n    \"timeout\": 60,\n}\nAUTH_USER_MODEL = \"usuarios.CustomUser\"\n# ======================================================\n# MIDDLEWARE\n# ======================================================\nMIDDLEWARE = [\n    \"django.middleware.security.SecurityMiddleware\",\n    \"whitenoise.middleware.WhiteNoiseMiddleware\",",
         "detail": "shopnest.settings",
         "documentation": {}
     },
@@ -1325,7 +1333,7 @@
         "kind": 5,
         "importPath": "shopnest.urls",
         "description": "shopnest.urls",
-        "peekOfCode": "urlpatterns = [\n    path('admin/', admin.site.urls),\n    path('admin_manual/', include('usuarios.urls_admin')),\n    path('', include('usuarios.urls')),\n    path(\"social/\", include(\"social.urls\")),\n]\n# SERVIR ARCHIVOS MEDIA EN DESARROLLO\nif settings.DEBUG:\n    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)",
+        "peekOfCode": "urlpatterns = [\n    path('admin/', admin.site.urls),\n    path('admin_manual/', include('usuarios.urls_admin')),\n    path('', include('usuarios.urls')),\n    path(\"social/\", include(\"social.urls\")),\n]\n# SERVIR ARCHIVOS MEDIA EN DESARROLLO\nurlpatterns += static(\n    settings.MEDIA_URL,\n    document_root=settings.MEDIA_ROOT",
         "detail": "shopnest.urls",
         "documentation": {}
     },
@@ -1865,7 +1873,7 @@
         "kind": 2,
         "importPath": "usuarios.views",
         "description": "usuarios.views",
-        "peekOfCode": "def gestor_emprendimiento(request):\n    emprendimiento = Emprendimiento.objects.filter(\n        usuario=request.user,\n        estado=\"aprobado\",\n        publicado=True\n    ).first()\n    total_seguidores = Seguimiento.objects.filter(\n        emprendimiento=emprendimiento\n        ).count()\n    if not emprendimiento:",
+        "peekOfCode": "def gestor_emprendimiento(request):\n    emprendimiento = Emprendimiento.objects.filter(\n        usuario=request.user,\n        estado=\"aprobado\",\n        publicado=True\n    ).first()\n    if not emprendimiento:\n        return redirect(\"crear_emprendimiento\")\n    total_seguidores = Seguimiento.objects.filter(\n        emprendimiento=emprendimiento",
         "detail": "usuarios.views",
         "documentation": {}
     },
@@ -1929,6 +1937,24 @@
         "importPath": "usuarios.views",
         "description": "usuarios.views",
         "peekOfCode": "def categorias(request):\n    if request.method == \"POST\":\n        nombre = request.POST.get(\"nombre\")\n        if nombre:\n            CategoriaProducto.objects.create(\n                nombre=nombre\n            )\n            return redirect(\"categorias\")\n    categorias = CategoriaProducto.objects.all().order_by(\"codigo\")\n    return render(request,",
+        "detail": "usuarios.views",
+        "documentation": {}
+    },
+    {
+        "label": "editar_producto",
+        "kind": 2,
+        "importPath": "usuarios.views",
+        "description": "usuarios.views",
+        "peekOfCode": "def editar_producto(request, producto_id):\n    producto = get_object_or_404(\n        Producto,\n        id=producto_id,\n        emprendimiento__usuario=request.user\n    )\n    if request.method == \"POST\":\n        nombre = request.POST.get(\"nombre\")\n        descripcion = request.POST.get(\"descripcion\")\n        precio = request.POST.get(\"precio\")",
+        "detail": "usuarios.views",
+        "documentation": {}
+    },
+    {
+        "label": "actualizar_imagen_carrusel",
+        "kind": 2,
+        "importPath": "usuarios.views",
+        "description": "usuarios.views",
+        "peekOfCode": "def actualizar_imagen_carrusel(request, imagen_id):\n    imagen = get_object_or_404(\n        EmprendimientoImagen,\n        id=imagen_id,\n        emprendimiento__usuario=request.user\n    )\n    if request.method == \"POST\":\n        nueva_imagen = request.FILES.get(\"imagen\")\n        if nueva_imagen:\n            try:",
         "detail": "usuarios.views",
         "documentation": {}
     },

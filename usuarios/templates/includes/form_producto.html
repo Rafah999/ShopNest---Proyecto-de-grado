@@ -2,14 +2,15 @@
     method="POST"
     enctype="multipart/form-data"
     id="productoForm"
+    action=""
 >
-
     {% csrf_token %}
 
     <input
         type="hidden"
         name="tipo"
         value="producto"
+        id="productoTipoInput"
     >
 
     <!-- FILA 1 -->
@@ -17,20 +18,14 @@
 
         <!-- NOMBRE -->
         <div class="campo-modal">
-
             <label>Nombre del producto</label>
-
             {{ producto_form.nombre }}
-
         </div>
 
-        <!-- CATEGORIA -->
+        <!-- CATEGORÍA -->
         <div class="campo-modal">
-
             <label>Categoría</label>
-
             {{ producto_form.categoria }}
-
         </div>
 
     </div>
@@ -40,47 +35,36 @@
 
         <!-- PRECIO -->
         <div class="campo-modal">
-
             <label>Precio</label>
-
             {{ producto_form.precio }}
-
         </div>
 
         <!-- TIPO STOCK -->
         <div class="campo-modal">
-
             <label>Tipo de existencias</label>
 
             <div class="stock-type-box">
 
                 <label class="stock-option">
-
                     <input
                         type="radio"
                         name="tipo_stock"
                         value="definido"
                         checked
                     >
-
                     Cantidad definida
-
                 </label>
 
                 <label class="stock-option">
-
                     <input
                         type="radio"
                         name="tipo_stock"
                         value="indefinido"
                     >
-
                     Bajo pedido
-
                 </label>
 
             </div>
-
         </div>
 
     </div>
@@ -90,12 +74,9 @@
 
         <!-- IMAGEN -->
         <div class="campo-modal">
-
             <label>Imagen del producto</label>
 
-            <label
-                class="image-preview-modal upload-product-img"
-            >
+            <label class="image-preview-modal upload-product-img">
 
                 <span id="textoPreviewProducto">
                     Agregar Imagen
@@ -109,32 +90,27 @@
                 <input
                     type="file"
                     name="imagen"
+                    id="productoImagenInput"
                     hidden
                     accept="image/*"
                     onchange="previewProducto(event)"
                 >
-
             </label>
-
         </div>
 
-        <!-- DESCRIPCION -->
+        <!-- DESCRIPCIÓN -->
         <div class="campo-modal">
-
             <label>Descripción del producto</label>
-
             {{ producto_form.descripcion }}
-
         </div>
 
     </div>
 
-    <!-- BOTON -->
+    <!-- BOTÓN -->
     <button
         type="submit"
         class="guardar-btn"
     >
         Guardar producto
     </button>
-
 </form>

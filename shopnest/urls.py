@@ -6,9 +6,9 @@ from django.urls import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('admin_manual/', include('usuarios.urls_admin')),
     path('', include('usuarios.urls')),
     path("social/", include("social.urls")),
+    path('administracion/', include('administracion.urls')),
 ]
 
 # SERVIR ARCHIVOS MEDIA EN DESARROLLO

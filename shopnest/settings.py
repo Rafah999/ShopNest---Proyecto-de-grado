@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "core",
     "usuarios",
     "social",
+    "administracion",
     
     #cloudinary (imagenes)
     'cloudinary',

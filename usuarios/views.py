@@ -419,17 +419,96 @@ def gestor_emprendimiento(request):
                 emprendimiento.save()
 
         # =========================
-        # IMÁGENES DEL CARRUSEL
+        # AGREGAR IMÁGENES AL CARRUSEL
         # =========================
         elif tipo == "imagenes":
 
             archivos = request.FILES.getlist("imagenes")
 
             for archivo in archivos:
-                EmprendimientoImagen.objects.create(
-                    emprendimiento=emprendimiento,
-                    imagen=archivo
-                )
+                try:
+                    EmprendimientoImagen.objects.create(
+                        emprendimiento=emprendimiento,
+                        imagen=archivo
+                    )
+                    print("Imagen agregada:", archivo.name)
+                except Exception as e:
+                    print("ERROR AL AGREGAR IMAGEN:", e)
+
+        # =========================
+        # EDITAR CARRUSEL
+        # =========================
+        elif tipo == "editar_carrusel":
+
+            print("=== EDITAR CARRUSEL ===")
+            print("FILES:", request.FILES)
+            print("ELIMINAR:", request.POST.get("imagenes_eliminar"))
+
+            # -------------------------
+            # ELIMINAR IMÁGENES
+            # -------------------------
+            ids_eliminar = request.POST.get(
+                "imagenes_eliminar",
+                ""
+            )
+
+            if ids_eliminar:
+
+                lista_ids = [
+                    int(i)
+                    for i in ids_eliminar.split(",")
+                    if i.strip()
+                ]
+
+                EmprendimientoImagen.objects.filter(
+                    id__in=lista_ids,
+                    emprendimiento=emprendimiento
+                ).delete()
+
+                print("Imágenes eliminadas:", lista_ids)
+
+            # -------------------------
+            # AGREGAR NUEVAS IMÁGENES
+            # -------------------------
+            archivos = request.FILES.getlist(
+                "imagenes"
+            )
+
+            print(
+                "ARCHIVOS NUEVOS:",
+                len(archivos)
+            )
+
+            for archivo in archivos:
+                try:
+                    EmprendimientoImagen.objects.create(
+                        emprendimiento=emprendimiento,
+                        imagen=archivo
+                    )
+                    print(
+                        "Imagen guardada:",
+                        archivo.name
+                    )
+                except Exception as e:
+                    print(
+                        "ERROR AL GUARDAR IMAGEN:",
+                        e
+                    )
+
+            # -------------------------
+            # LIMPIAR REGISTROS ROTOS
+            # -------------------------
+            for img in EmprendimientoImagen.objects.filter(
+                emprendimiento=emprendimiento
+            ):
+                try:
+                    _ = img.imagen.url
+                except Exception:
+                    print(
+                        "Eliminando registro roto:",
+                        img.id
+                    )
+                    img.delete()
 
         # =========================
         # CREAR PRODUCTO
@@ -443,9 +522,13 @@ def gestor_emprendimiento(request):
 
             if form_producto.is_valid():
 
-                producto = form_producto.save(commit=False)
+                producto = form_producto.save(
+                    commit=False
+                )
 
-                tipo_stock = request.POST.get("tipo_stock")
+                tipo_stock = request.POST.get(
+                    "tipo_stock"
+                )
 
                 if tipo_stock == "indefinido":
                     producto.stock_indefinido = True
@@ -457,10 +540,15 @@ def gestor_emprendimiento(request):
                 producto.emprendimiento = emprendimiento
                 producto.save()
 
-                print("Producto creado correctamente:", producto.nombre)
+                print(
+                    "Producto creado correctamente:",
+                    producto.nombre
+                )
 
             else:
-                print("ERRORES AL CREAR PRODUCTO:")
+                print(
+                    "ERRORES AL CREAR PRODUCTO:"
+                )
                 print(form_producto.errors)
 
         # =========================
@@ -470,8 +558,8 @@ def gestor_emprendimiento(request):
 
             if (
                 emprendimiento.logo and
-                imagenes.count() >= 5 and
-                productos.count() >= 3
+                len(imagenes) >= 5 and
+                len(productos) >= 3
             ):
                 emprendimiento.publicado = True
                 emprendimiento.estado = "aprobado"
@@ -500,8 +588,6 @@ def gestor_emprendimiento(request):
             "total_seguidores": total_seguidores,
         }
     )
-
-
 
 
 @login_required
@@ -764,5 +850,19 @@ def actualizar_imagen_carrusel(request, imagen_id):
                 print("Imagen del carrusel actualizada.")
             except Exception as e:
                 print("ERROR AL ACTUALIZAR CARRUSEL:", e)
+
+    return redirect("gestor_emprendimiento")
+
+
+
+@login_required
+def eliminar_imagen_carrusel(request, imagen_id):
+    imagen = get_object_or_404(
+        EmprendimientoImagen,
+        id=imagen_id,
+        emprendimiento__usuario=request.user
+    )
+
+    imagen.delete()
 
     return redirect("gestor_emprendimiento")

@@ -84,43 +84,12 @@
         <button
             type="button"
             class="purple-btn"
-            onclick="toggleModoEdicionCarrusel()"
+            onclick="abrirModalCarrusel()"
         >
             Editar imágenes de carrusel
         </button>
 
-        <form
-            method="POST"
-            enctype="multipart/form-data"
-            class="upload-form"
-        >
-
-            {% csrf_token %}
-
-            <input
-                type="hidden"
-                name="tipo"
-                value="imagenes"
-            >
-
-            <label class="purple-btn upload-label">
-
-                Agregar Imágenes al carrusel
-
-                <input
-                    type="file"
-                    name="imagenes"
-                    multiple
-                    hidden
-                    onchange="this.form.submit()"
-                >
-
-            </label>
-
-        </form>
-
     </div>
-
     <!-- ========================= -->
     <!-- PRODUCTOS -->
     <!-- ========================= -->
@@ -344,6 +313,64 @@
         </div>
 
     </div>
+    <!-- ========================= -->
+    <!-- LOGO DEL EMPRENDIMIENTO -->
+    <!-- ========================= -->
+
+    <br>
+    <br>
+
+    <div class="productos-container">
+
+        <div class="productos-header">
+            Información del emprendimiento
+        </div>
+
+        <div class="productos-body">
+
+            <!-- LOGO -->
+            <div class="logo-section">
+
+                <div class="logo-preview-box">
+
+                    {% if emprendimiento.logo %}
+                        <img
+                            src="{{ emprendimiento.logo.url }}"
+                            alt="Logo del emprendimiento"
+                            class="logo-preview-img"
+                        >
+                    {% else %}
+                        <div class="logo-placeholder">
+                            Sin logo
+                        </div>
+                    {% endif %}
+
+                </div>
+
+                <div class="logo-info">
+
+                    <h3>Logo del emprendimiento</h3>
+
+                    <p>
+                        <strong>Ubicación:</strong>
+                        No disponible por el momento.
+                    </p>
+
+                    <button
+                        type="button"
+                        class="purple-btn"
+                        onclick="abrirModalLogo()"
+                    >
+                        Editar logo
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
@@ -361,183 +388,226 @@
     </div>
 
 </div>
-<!-- REEMPLAZA TODO EL BLOQUE <script> FINAL POR ESTE -->
-<!-- Este bloque corrige la carga de todos los datos en el modal -->
-<!-- Basado en el template que compartiste :contentReference[oaicite:0]{index=0} -->
 
-<script>
-const productoModal = document.getElementById("productoModal");
-const productoForm = document.getElementById("productoForm");
-const productoModalTitle = document.getElementById("productoModalTitle");
-const openProductoModal = document.getElementById("openProductoModal");
+<!-- ========================= -->
+<!-- MODAL EDITAR CARRUSEL -->
+<!-- ========================= -->
 
-function previewProducto(event) {
-    const file = event.target.files[0];
-    const img = document.getElementById("imgPreviewProducto");
-    const texto = document.getElementById("textoPreviewProducto");
+<div class="producto-modal" id="modalCarrusel">
 
-    if (file) {
-        img.src = URL.createObjectURL(file);
-        img.style.display = "block";
-        texto.style.display = "none";
-    }
-}
+    <div class="producto-modal-content modal-carrusel-content">
 
-function toggleStock() {
-    const seleccionado = document.querySelector(
-        'input[name="tipo_stock"]:checked'
-    );
+        <h3>Editar imágenes del carrusel</h3>
 
-    if (!seleccionado) return;
+        <!-- LISTA DE IMÁGENES -->
+        <div
+            class="carrusel-editor-grid"
+            id="carruselEditorGrid"
+        >
 
-    const stockBox = document.getElementById("stockBox");
+            {% for img in imagenes %}
 
-    if (!stockBox) return;
+            <div
+                class="carrusel-editor-item"
+                data-id="{{ img.id }}"
+            >
+                <img src="{{ img.imagen.url }}">
 
-    if (seleccionado.value === "indefinido") {
-        stockBox.style.display = "none";
-    } else {
-        stockBox.style.display = "block";
-    }
-}
+                <button
+                    type="button"
+                    class="delete-carrusel-btn"
+                    onclick="confirmarEliminarCarrusel(this)"
+                >
+                    ×
+                </button>
+            </div>
 
-function resetProductoModal() {
-    if (!productoForm) return;
+            {% empty %}
 
-    productoForm.reset();
-    productoForm.action = "";
+            <div class="empty-products">
+                No hay imágenes en el carrusel.
+            </div>
 
-    const tipoInput = document.getElementById("productoTipoInput");
-    if (tipoInput) {
-        tipoInput.value = "producto";
-    }
+            {% endfor %}
 
-    if (productoModalTitle) {
-        productoModalTitle.innerText = "Agregar un Producto";
-    }
+        </div>
 
-    const guardarBtn = document.getElementById("guardarProductoBtn");
-    if (guardarBtn) {
-        guardarBtn.innerText = "Guardar producto";
-    }
+        <!-- FORMULARIO -->
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+            id="formCarrusel"
+        >
+            {% csrf_token %}
 
-    const img = document.getElementById("imgPreviewProducto");
-    const texto = document.getElementById("textoPreviewProducto");
+            <input
+                type="hidden"
+                name="tipo"
+                value="editar_carrusel"
+            >
 
-    if (img) {
-        img.src = "";
-        img.style.display = "none";
-    }
+            <input
+                type="hidden"
+                name="imagenes_eliminar"
+                id="imagenesEliminarInput"
+            >
 
-    if (texto) {
-        texto.style.display = "flex";
-        texto.innerText = "Agregar Imagen";
-    }
+            <label class="purple-btn upload-label">
+                Agregar imágenes
 
-    const radioDefinido = document.querySelector(
-        'input[name="tipo_stock"][value="definido"]'
-    );
+                <input
+                    type="file"
+                    name="imagenes"
+                    id="imagenesCarruselInput"
+                    multiple
+                    hidden
+                    accept="image/*"
+                    onchange="previewNuevasImagenesCarrusel(this)"
+                >
+            </label>
 
-    if (radioDefinido) {
-        radioDefinido.checked = true;
-    }
+            <button
+                type="submit"
+                class="guardar-btn"
+            >
+                Guardar cambios
+            </button>
 
-    toggleStock();
-}
+        </form>
 
-function abrirEditarProducto(
-    id,
-    nombre,
-    categoriaId,
-    precio,
-    descripcion,
-    stock,
-    stockIndefinido,
-    imagenUrl
-) {
-    resetProductoModal();
+    </div>
 
-    productoForm.action = `/producto/editar/${id}/`;
+</div>
 
-    const tipoInput = document.getElementById("productoTipoInput");
-    if (tipoInput) {
-        tipoInput.value = "editar";
-    }
+<!-- SUBMODAL CONFIRMAR ELIMINACIÓN -->
 
-    productoModalTitle.innerText = "Editar Producto";
+<div class="producto-modal" id="confirmDeleteCarruselModal">
 
-    const guardarBtn = document.getElementById("guardarProductoBtn");
-    if (guardarBtn) {
-        guardarBtn.innerText = "Guardar cambios";
-    }
+    <div class="producto-modal-content confirm-delete-content">
 
-    // Cargar datos
-    document.getElementById("id_nombre").value = nombre;
-    document.getElementById("id_categoria").value = categoriaId;
-    document.getElementById("id_precio").value = precio;
-    document.getElementById("id_descripcion").value = descripcion;
+        <h3>¿Eliminar esta imagen?</h3>
 
-    // Tipo de stock
-    if (stockIndefinido) {
-        document.querySelector(
-            'input[name="tipo_stock"][value="indefinido"]'
-        ).checked = true;
-    } else {
-        document.querySelector(
-            'input[name="tipo_stock"][value="definido"]'
-        ).checked = true;
-    }
+        <p>
+            Esta imagen se eliminará cuando guardes los cambios.
+        </p>
 
-    toggleStock();
+        <div class="confirm-delete-actions">
 
-    // Imagen actual
-    const img = document.getElementById("imgPreviewProducto");
-    const texto = document.getElementById("textoPreviewProducto");
+            <button
+                type="button"
+                class="cancel-btn"
+                onclick="cerrarConfirmDeleteCarrusel()"
+            >
+                Cancelar
+            </button>
 
-    if (imagenUrl && imagenUrl.trim() !== "") {
-        img.src = imagenUrl;
-        img.style.display = "block";
-        texto.style.display = "none";
-    }
+            <button
+                type="button"
+                class="guardar-btn"
+                onclick="eliminarImagenSeleccionada()"
+            >
+                Sí, eliminar
+            </button>
 
-    // Mostrar modal
-    productoModal.classList.add("active");
-    document.body.style.overflow = "hidden";
-}
+        </div>
 
-// Abrir modal para nuevo producto
-if (openProductoModal) {
-    openProductoModal.addEventListener("click", () => {
-        resetProductoModal();
-        productoModal.classList.add("active");
-        document.body.style.overflow = "hidden";
-    });
-}
+    </div>
 
-// Cerrar modal al hacer click fuera
-if (productoModal) {
-    productoModal.addEventListener("click", (e) => {
-        if (e.target === productoModal) {
-            productoModal.classList.remove("active");
-            document.body.style.overflow = "auto";
-        }
-    });
-}
+</div>
 
-// Inicialización
-document.addEventListener("DOMContentLoaded", () => {
-    document
-        .querySelectorAll('input[name="tipo_stock"]')
-        .forEach(radio => {
-            radio.addEventListener("change", toggleStock);
-        });
+<!-- ========================= -->
+<!-- MODAL EDITAR LOGO -->
+<!-- ========================= -->
 
-    toggleStock();
-});
+<div class="producto-modal" id="modalLogo">
 
-// Mostrar/ocultar botones del carrusel
-function toggleModoEdicionCarrusel() {
-    document.body.classList.toggle("editando-carrusel");
-}
-</script>
+    <div class="producto-modal-content">
+
+        <h3>Editar logo</h3>
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+            id="formLogo"
+        >
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="tipo"
+                value="logo"
+            >
+
+            <input
+                type="hidden"
+                name="eliminar_logo"
+                id="eliminarLogoInput"
+                value="0"
+            >
+
+            <div class="logo-modal-preview">
+
+                {% if emprendimiento.logo %}
+                    <img
+                        id="logoPreview"
+                        src="{{ emprendimiento.logo.url }}"
+                    >
+                {% else %}
+                    <img
+                        id="logoPreview"
+                        style="display:none;"
+                    >
+                    <div id="logoPlaceholder">
+                        Sin logo
+                    </div>
+                {% endif %}
+
+                <button
+                    type="button"
+                    class="delete-carrusel-btn"
+                    onclick="eliminarLogo()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+            <label class="purple-btn upload-label">
+                Cambiar logo
+
+                <input
+                    type="file"
+                    name="logo"
+                    accept="image/*"
+                    hidden
+                    onchange="previewNuevoLogo(event)"
+                >
+            </label>
+
+            <div class="confirm-delete-actions">
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="cerrarModalLogo()"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="guardar-btn"
+                >
+                    Guardar cambios
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script src="{% static 'scripts/gestor.js' %}?v=3" defer></script>
 {% endblock %}

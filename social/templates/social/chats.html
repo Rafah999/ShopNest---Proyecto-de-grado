@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+{% load static social_extras %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chats.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="chats-page">
+
+    <!-- SIDEBAR -->
+    <div class="chats-sidebar">
+
+        <div class="chats-sidebar-header">
+            Chats
+        </div>
+
+        {% if chats.exists %}
+
+            {% for chat in chats %}
+            <a
+                href="{% url 'mis_chats' %}?chat={{ chat.id }}"
+                class="chat-item {% if chat_activo and chat.id == chat_activo.id %}active{% endif %}"
+            >
+
+                <div class="chat-avatar">
+                    {% if chat.emprendimiento.logo %}
+                        <img
+                            src="{{ chat.emprendimiento.logo.url }}"
+                            alt="{{ chat.emprendimiento.nombre }}"
+                        >
+                    {% else %}
+                        {{ chat.emprendimiento.nombre|first|upper }}
+                    {% endif %}
+                </div>
+
+                <div class="chat-info">
+                    <div class="chat-name">
+                        {{ chat.emprendimiento.nombre }}
+                    </div>
+
+                    <div class="chat-last-message">
+                        {% with ultimo=chat.mensajes.last %}
+                            {% if ultimo %}
+                                {% if ultimo.get_producto_id %}
+                                    Producto compartido
+                                {% else %}
+                                    {{ ultimo.contenido|truncatechars:40 }}
+                                {% endif %}
+                            {% else %}
+                                Sin mensajes
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+
+            </a>
+            {% endfor %}
+
+        {% else %}
+
+            <div class="no-chats">
+                No has contactado a ningún emprendimiento.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    <!-- PANEL DERECHO -->
+    <div class="chat-panel">
+
+        {% if chat_activo %}
+
+            <!-- HEADER -->
+            <div class="chat-header">
+
+                <div class="chat-avatar large">
+                    {% if chat_activo.emprendimiento.logo %}
+                        <img
+                            src="{{ chat_activo.emprendimiento.logo.url }}"
+                            alt="{{ chat_activo.emprendimiento.nombre }}"
+                        >
+                    {% else %}
+                        {{ chat_activo.emprendimiento.nombre|first|upper }}
+                    {% endif %}
+                </div>
+
+                <div class="chat-header-info">
+                    <h3>{{ chat_activo.emprendimiento.nombre }}</h3>
+
+                    {% if chat_activo.producto %}
+                        <p>{{ chat_activo.producto.nombre }}</p>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- MENSAJES -->
+            <div class="chat-messages" id="chatMessages">
+
+                {% for mensaje in chat_activo.mensajes.all %}
+
+                    {% if mensaje.get_producto_id %}
+
+                        {% with producto=mensaje.get_producto_id|producto_por_id %}
+
+                            {% if producto %}
+                            <div class="mensaje sistema mensaje-producto">
+
+                                <div class="chat-product-card">
+
+                                    <div class="chat-product-image">
+                                        {% if producto.imagen %}
+                                            <img
+                                                src="{{ producto.imagen.url }}"
+                                                alt="{{ producto.nombre }}"
+                                            >
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="chat-product-info">
+                                        <h4>{{ producto.nombre }}</h4>
+
+                                        {% if producto.descripcion %}
+                                            <p>{{ producto.descripcion }}</p>
+                                        {% endif %}
+
+                                        <strong>${{ producto.precio }}</strong>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            {% endif %}
+
+                        {% endwith %}
+
+                    {% else %}
+
+                        <div class="mensaje {{ mensaje.tipo }}">
+                            {{ mensaje.contenido }}
+                        </div>
+
+                    {% endif %}
+
+                {% empty %}
+
+                    <div class="mensaje sistema">
+                        No hay mensajes todavía.
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            <!-- TARJETA DEL PRODUCTO + FORMULARIO -->
+            {% if mostrar_contacto_producto %}
+
+                <!-- PRODUCTO -->
+                <div class="chat-product-card">
+
+                    <div class="chat-product-image">
+                        {% if chat_activo.producto and chat_activo.producto.imagen %}
+                            <img
+                                src="{{ chat_activo.producto.imagen.url }}"
+                                alt="{{ chat_activo.producto.nombre }}"
+                            >
+                        {% endif %}
+                    </div>
+
+                    <div class="chat-product-info">
+                        <h4>{{ chat_activo.producto.nombre }}</h4>
+
+                        {% if chat_activo.producto.descripcion %}
+                            <p>{{ chat_activo.producto.descripcion }}</p>
+                        {% endif %}
+
+                        <strong>${{ chat_activo.producto.precio }}</strong>
+                    </div>
+
+                </div>
+
+                <!-- FORMULARIO -->
+                <div class="chat-input-box">
+
+                    <form id="chatForm" class="chat-message-form">
+                        {% csrf_token %}
+
+                        <input
+                            type="hidden"
+                            id="chatId"
+                            value="{{ chat_activo.id }}"
+                        >
+
+                        <div class="chat-form-fields">
+
+                            <select
+                                name="tipo"
+                                id="chatTipo"
+                                required
+                                class="chat-select"
+                            >
+                                <option value="">¿Qué necesitas?</option>
+
+                                <option
+                                    value="pedido"
+                                    {% if tipo_preseleccionado == "pedido" %}selected{% endif %}
+                                >
+                                    Hacer pedido
+                                </option>
+
+                                <option
+                                    value="disponibilidad"
+                                    {% if tipo_preseleccionado == "disponibilidad" %}selected{% endif %}
+                                >
+                                    Consultar disponibilidad
+                                </option>
+
+                                <option
+                                    value="personalizacion"
+                                    {% if tipo_preseleccionado == "personalizacion" %}selected{% endif %}
+                                >
+                                    Consultar personalización
+                                </option>
+
+                                <option
+                                    value="pago"
+                                    {% if tipo_preseleccionado == "pago" %}selected{% endif %}
+                                >
+                                    Métodos de pago
+                                </option>
+
+                                <option
+                                    value="chat"
+                                    {% if tipo_preseleccionado == "chat" %}selected{% endif %}
+                                >
+                                    Hablar con el vendedor
+                                </option>
+                            </select>
+
+                            <textarea
+                                name="mensaje"
+                                id="chatMensaje"
+                                rows="2"
+                                class="chat-textarea"
+                                placeholder="Escribe tu solicitud..."
+                            ></textarea>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="chat-send-btn"
+                        >
+                            Enviar mensaje
+                        </button>
+
+                    </form>
+
+                </div>
+
+            {% endif %}
+
+            <!-- OPCIONES ADICIONALES -->
+            {% if mostrar_opciones_adicionales %}
+            <div class="chat-extra-options">
+
+                <div class="chat-extra-title">
+                    ¿Algo más con lo que te pueda ayudar?
+                </div>
+
+                <div class="chat-extra-buttons">
+
+                    <a
+                        href="{% url 'mis_chats' %}?chat={{ chat_activo.id }}"
+                        class="chat-option-btn"
+                    >
+                        Tengo dudas sobre otro producto
+                    </a>
+
+                    <a
+                        href="{% url 'mis_chats' %}?chat={{ chat_activo.id }}"
+                        class="chat-option-btn"
+                    >
+                        Quiero comunicarme con el emprendimiento
+                    </a>
+
+                    <a
+                        href="{% url 'mis_chats' %}?chat={{ chat_activo.id }}"
+                        class="chat-option-btn"
+                    >
+                        Deseo presentar una queja
+                    </a>
+
+                    <a
+                        href="{% url 'mis_chats' %}"
+                        class="chat-option-btn secondary"
+                    >
+                        No, eso es todo
+                    </a>
+
+                </div>
+
+            </div>
+            {% endif %}
+
+        {% else %}
+
+            <div class="empty-chat">
+                Selecciona un chat para ver la conversación.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script src="{% static 'scripts/chats.js' %}"></script>
+
+{% endblock %}

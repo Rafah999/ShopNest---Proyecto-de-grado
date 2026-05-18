@@ -78,6 +78,7 @@ class SolicitudContacto(models.Model):
         ("personalizacion", "Consultar personalización"),
         ("pago", "Métodos de pago"),
         ("chat", "Hablar con el vendedor"),
+        ("otro", "Otro")
     ]
 
     ESTADOS = [
@@ -205,3 +206,25 @@ class MensajeChat(models.Model):
 
     def __str__(self):
         return f"{self.chat.id} - {self.tipo}"
+
+
+
+class RespuestaRapida(models.Model):
+
+    emprendimiento = models.ForeignKey(
+        Emprendimiento,
+        on_delete=models.CASCADE,
+        related_name="respuestas_rapidas"
+    )
+
+    titulo = models.CharField(max_length=100)
+
+    contenido = models.TextField()
+
+    creado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["titulo"]
+
+    def __str__(self):
+        return f"{self.emprendimiento.nombre} - {self.titulo}"

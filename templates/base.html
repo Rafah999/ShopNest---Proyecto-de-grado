@@ -154,10 +154,7 @@
 
                 </a>
 
-                <a href="{% url 'mis_chats' %}" class="drawer-btn">
-                    <span>Chats</span>
-                    <i class="fa-regular fa-comments"></i>
-                </a>
+                
 
                 <a
                     href="javascript:void(0);"
@@ -171,6 +168,18 @@
                         0
                     </span>
                 </a>
+
+                <a href="{% url 'mis_chats' %}" class="drawer-btn">
+                    <span>Chats</span>
+                    <i class="fa-regular fa-comments"></i>
+                </a>
+
+                {% if user.is_authenticated and user.emprendimientos.exists %}
+                <a href="{% url 'panel_atencion' %}" class="drawer-btn">
+                    <span>Panel de Atención</span>
+                    <i class="fa-solid fa-headset"></i>
+                </a>
+                {% endif %}
 
                 {% if user.es_emprendedor %}
                     <a

@@ -1,0 +1,450 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/panel_atencion.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="atencion-page">
+
+    <!-- SIDEBAR -->
+    <aside class="atencion-sidebar">
+
+        <div class="atencion-title">
+            Panel de Atención
+        </div>
+
+        <div class="dashboard-metrics">
+            <div class="metric-card">
+                <span class="metric-value">{{ tickets_hoy }}</span>
+                <span class="metric-label">Hoy</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-value">{{ tickets_semana }}</span>
+                <span class="metric-label">7 días</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-value">{{ tasa_cierre }}%</span>
+                <span class="metric-label">Tasa de cierre</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-value">{{ tipo_mas_frecuente }}</span>
+                <span class="metric-label">Tipo más frecuente</span>
+            </div>
+        </div>
+
+        <div class="atencion-filters">
+            <form method="GET" class="filters-form">
+                <select name="estado" class="filter-select">
+                    <option value="">Todos los estados</option>
+                    <option value="pendiente" {% if estado_actual == "pendiente" %}selected{% endif %}>
+                        Pendientes
+                    </option>
+                    <option value="respondida" {% if estado_actual == "respondida" %}selected{% endif %}>
+                        Respondidos
+                    </option>
+                    <option value="cerrada" {% if estado_actual == "cerrada" %}selected{% endif %}>
+                        Cerrados
+                    </option>
+                </select>
+
+                <select name="tipo" class="filter-select">
+                    <option value="">Todos los tipos</option>
+                    {% for codigo, nombre in tipos %}
+                        <option value="{{ codigo }}" {% if tipo_actual == codigo %}selected{% endif %}>
+                            {{ nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="filter-btn">
+                    Filtrar
+                </button>
+            </form>
+        </div>
+
+        <div class="atencion-history">
+            {% if historial %}
+                <a href="{% url 'panel_atencion' %}" class="history-btn">
+                    ← Volver al panel
+                </a>
+            {% else %}
+                <a href="{% url 'panel_atencion' %}?historial=1" class="history-btn">
+                    📁 Historial
+                </a>
+            {% endif %}
+
+            <div class="history-count">
+                {{ total_filtrados }} ticket{{ total_filtrados|pluralize }}
+            </div>
+        </div>
+
+        <div class="atencion-stats">
+            <div class="stat-card">
+                <span class="stat-number">{{ total_pedidos }}</span>
+                <span class="stat-label">Pedidos</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-number">{{ total_consultas }}</span>
+                <span class="stat-label">Consultas</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-number">{{ total_pendientes }}</span>
+                <span class="stat-label">Pendientes</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-number">{{ total_respondidos }}</span>
+                <span class="stat-label">Respondidos</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-number">{{ total_cerrados }}</span>
+                <span class="stat-label">Cerrados</span>
+            </div>
+        </div>
+
+        <div class="ticket-list">
+            {% if tickets %}
+                {% for ticket in tickets %}
+                    <a
+                        href="?ticket={{ ticket.id }}"
+                        class="ticket-item {% if ticket_activo and ticket.id == ticket_activo.id %}active{% endif %}"
+                    >
+                        <div class="ticket-user">
+                            {{ ticket.usuario.username }}
+                        </div>
+
+                        <div class="ticket-product">
+                            {% if ticket.producto %}
+                                {{ ticket.producto.nombre }}
+                            {% else %}
+                                Sin producto
+                            {% endif %}
+                        </div>
+
+                        <div class="ticket-type">
+                            {{ ticket.get_tipo_display }}
+                        </div>
+                    </a>
+                {% endfor %}
+            {% else %}
+                <div class="no-tickets">
+                    No hay tickets todavía.
+                </div>
+            {% endif %}
+        </div>
+
+    </aside>
+
+    <!-- PANEL DERECHO -->
+    <section class="atencion-detail">
+
+        {% if ticket_activo %}
+
+            <div class="detail-header">
+                <h2>{{ ticket_activo.get_tipo_display }}</h2>
+                <span class="estado {{ ticket_activo.estado }}">
+                    {{ ticket_activo.get_estado_display }}
+                </span>
+            </div>
+
+            <div class="detail-card">
+                <p>
+                    <strong>Cliente:</strong>
+                    {{ ticket_activo.usuario.username }}
+                </p>
+
+                <p>
+                    <strong>Producto:</strong>
+                    {% if ticket_activo.producto %}
+                        {{ ticket_activo.producto.nombre }}
+                    {% else %}
+                        Sin producto
+                    {% endif %}
+                </p>
+
+                <p>
+                    <strong>Fecha:</strong>
+                    {{ ticket_activo.fecha|date:"d/m/Y H:i" }}
+                </p>
+
+                {% if ticket_activo.mensaje %}
+                    <div class="detail-message">
+                        {{ ticket_activo.mensaje }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <form
+                method="POST"
+                action="{% url 'responder_ticket' ticket_activo.id %}"
+                class="respuesta-form"
+            >
+                {% csrf_token %}
+
+                <div class="respuesta-rapida-header">
+                    <select id="respuestaRapida" class="filter-select">
+                        <option value="">
+                            Selecciona una respuesta rápida
+                        </option>
+
+                        {% for respuesta in respuestas_rapidas %}
+                            <option value="{{ respuesta.contenido }}">
+                                {{ respuesta.titulo }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <button
+                        type="button"
+                        class="manage-templates-btn"
+                        onclick="document.getElementById('modalRespuestasRapidas').classList.add('show')"
+                    >
+                        ➕ Administrar
+                    </button>
+                </div>
+
+                <textarea
+                    name="respuesta"
+                    id="respuestaTextarea"
+                    rows="4"
+                    class="respuesta-textarea"
+                    placeholder="Escribe la respuesta para el cliente..."
+                    required
+                ></textarea>
+
+                <div class="detail-actions">
+                    <button type="submit" class="action-btn primary">
+                        Enviar respuesta
+                    </button>
+
+                    <a
+                        href="{% url 'cerrar_ticket' ticket_activo.id %}"
+                        class="action-btn secondary"
+                    >
+                        Cerrar ticket
+                    </a>
+                </div>
+            </form>
+
+        {% else %}
+
+            <div class="empty-detail">
+                Selecciona un ticket para ver los detalles.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+<!-- MODAL RESPUESTAS RÁPIDAS -->
+<div id="modalRespuestasRapidas" class="modal-templates">
+
+    <div class="modal-templates-content">
+
+        <div class="modal-templates-header">
+            <h3>Respuestas rápidas</h3>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="cerrarModalRespuestas()"
+            >
+                ×
+            </button>
+        </div>
+
+        <div class="templates-list">
+
+            {% for respuesta in respuestas_rapidas %}
+                <div class="template-item">
+
+                    <div class="template-info">
+                        <strong>{{ respuesta.titulo }}</strong>
+                        <p>{{ respuesta.contenido|truncatechars:100 }}</p>
+                    </div>
+
+                    <div class="template-actions">
+
+                        <a
+                            href="#"
+                            onclick="
+                                editarRespuestaRapida(
+                                    {{ respuesta.id }},
+                                    '{{ respuesta.titulo|escapejs }}',
+                                    '{{ respuesta.contenido|escapejs }}'
+                                );
+                                return false;
+                            "
+                        >
+                            Editar
+                        </a>
+
+                        <a
+                            href="{% url 'eliminar_respuesta_rapida' respuesta.id %}"
+                            onclick="return confirm('¿Eliminar esta respuesta rápida?')"
+                        >
+                            Eliminar
+                        </a>
+
+                    </div>
+
+                </div>
+            {% empty %}
+                <p>No has creado respuestas rápidas.</p>
+            {% endfor %}
+
+        </div>
+
+        <div class="template-create">
+
+            <form
+                method="POST"
+                action="{% url 'crear_respuesta_rapida' %}"
+                id="formRespuestaRapida"
+            >
+                {% csrf_token %}
+
+                <input
+                    type="text"
+                    name="titulo"
+                    placeholder="Título"
+                    class="respuesta-textarea"
+                    style="min-height:auto; margin-bottom:10px;"
+                    required
+                >
+
+                <textarea
+                    name="contenido"
+                    rows="4"
+                    class="respuesta-textarea"
+                    placeholder="Contenido de la respuesta..."
+                    required
+                ></textarea>
+
+                <div style="display:flex; gap:10px; margin-top:12px;">
+                    <button
+                        type="submit"
+                        class="action-btn primary"
+                        id="btnGuardarRespuesta"
+                    >
+                        Guardar respuesta rápida
+                    </button>
+
+                    <button
+                        type="button"
+                        class="action-btn secondary"
+                        id="btnCancelarEdicion"
+                        style="display:none;"
+                    >
+                        Cancelar edición
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const select = document.getElementById("respuestaRapida");
+    const textarea = document.getElementById("respuestaTextarea");
+    const modal = document.getElementById("modalRespuestasRapidas");
+
+    const form = document.getElementById("formRespuestaRapida");
+    const btnGuardar = document.getElementById("btnGuardarRespuesta");
+    const btnCancelar = document.getElementById("btnCancelarEdicion");
+
+    const inputTitulo = form
+        ? form.querySelector('input[name="titulo"]')
+        : null;
+
+    const inputContenido = form
+        ? form.querySelector('textarea[name="contenido"]')
+        : null;
+
+    const createUrl = "{% url 'crear_respuesta_rapida' %}";
+
+    // Selector de respuestas rápidas
+    if (select && textarea) {
+        select.addEventListener("change", function () {
+            if (this.value) {
+                textarea.value = this.value;
+                textarea.focus();
+            }
+        });
+    }
+
+    // Cerrar modal al hacer clic fuera
+    if (modal) {
+        modal.addEventListener("click", function (e) {
+            if (e.target === modal) {
+                cerrarModalRespuestas();
+            }
+        });
+    }
+
+    // Cerrar modal con ESC
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && modal && modal.classList.contains("show")) {
+            cerrarModalRespuestas();
+        }
+    });
+
+    // Cancelar edición
+    if (btnCancelar) {
+        btnCancelar.addEventListener("click", function () {
+            resetFormularioRespuesta();
+        });
+    }
+
+    // Funciones globales
+    window.editarRespuestaRapida = function (id, titulo, contenido) {
+        if (!form) return;
+
+        form.action = `/social/respuestas-rapidas/editar/${id}/`;
+        inputTitulo.value = titulo;
+        inputContenido.value = contenido;
+
+        btnGuardar.textContent = "Actualizar respuesta rápida";
+        btnCancelar.style.display = "inline-flex";
+
+        modal.classList.add("show");
+        inputTitulo.focus();
+    };
+
+    window.resetFormularioRespuesta = function () {
+        if (!form) return;
+
+        form.reset();
+        form.action = createUrl;
+
+        btnGuardar.textContent = "Guardar respuesta rápida";
+        btnCancelar.style.display = "none";
+    };
+
+    window.cerrarModalRespuestas = function () {
+        if (modal) {
+            modal.classList.remove("show");
+        }
+        resetFormularioRespuesta();
+    };
+});
+</script>
+
+{% endblock %}

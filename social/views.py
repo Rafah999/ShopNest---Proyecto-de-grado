@@ -9,6 +9,8 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.utils import timezone
+from datetime import timedelta
 
 
 @login_required
@@ -400,3 +402,306 @@ def enviar_mensaje_chat(request):
         "mensaje_adicional": mensaje,
         "respuesta_sistema": respuesta_sistema,
     })
+
+
+@login_required
+def panel_atencion(request):
+
+    emprendimiento = get_object_or_404(
+        Emprendimiento,
+        usuario=request.user
+    )
+
+    historial = request.GET.get("historial") == "1"
+
+    # Base queryset
+    tickets = (
+        SolicitudContacto.objects
+        .filter(emprendimiento=emprendimiento)
+        .select_related("usuario", "producto")
+    )
+
+    # Panel principal vs historial
+    if historial:
+        tickets = tickets.filter(estado="cerrada")
+    else:
+        tickets = tickets.exclude(estado="cerrada")
+
+    # Filtros
+    estado = request.GET.get("estado", "")
+    tipo = request.GET.get("tipo", "")
+
+    if estado:
+        tickets = tickets.filter(estado=estado)
+
+    if tipo:
+        tickets = tickets.filter(tipo=tipo)
+
+    tickets = tickets.order_by("fecha")
+
+    # Ticket activo
+    ticket_activo = None
+    ticket_id = request.GET.get("ticket")
+
+    if ticket_id:
+        ticket_activo = tickets.filter(id=ticket_id).first()
+
+    if not ticket_activo and tickets.exists():
+        ticket_activo = tickets.first()
+
+
+    base = SolicitudContacto.objects.filter(
+        emprendimiento=emprendimiento
+    )
+
+    # Hoy
+    hoy = timezone.now().date()
+
+    tickets_hoy = base.filter(
+        fecha__date=hoy
+    ).count()
+
+    # Últimos 7 días
+    ultima_semana = timezone.now() - timedelta(days=7)
+
+    tickets_semana = base.filter(
+        fecha__gte=ultima_semana
+    ).count()
+
+    # Tasa de cierre
+    total_tickets = base.count()
+
+    if total_tickets > 0:
+        tasa_cierre = round(
+            (base.filter(estado="cerrada").count() / total_tickets) * 100,
+            1
+        )
+    else:
+        tasa_cierre = 0
+
+    # Tipo más frecuente
+    tipo_top = (
+        base.values("tipo")
+        .annotate(total=models.Count("id"))
+        .order_by("-total")
+        .first()
+    )
+
+    if tipo_top:
+        tipo_mas_frecuente = dict(
+            SolicitudContacto.TIPOS
+        ).get(tipo_top["tipo"], "N/A")
+    else:
+        tipo_mas_frecuente = "N/A"
+
+    context = {
+        "tickets": tickets,
+        "ticket_activo": ticket_activo,
+        "historial": historial,
+
+        "estado_actual": estado,
+        "tipo_actual": tipo,
+        "tipos": SolicitudContacto.TIPOS,
+
+        "total_filtrados": tickets.count(),
+
+        "total_pendientes": base.filter(
+            estado="pendiente"
+        ).count(),
+
+        "total_respondidos": base.filter(
+            estado="respondida"
+        ).count(),
+
+        "total_cerrados": base.filter(
+            estado="cerrada"
+        ).count(),
+
+        "total_pedidos": base.filter(
+            tipo="pedido"
+        ).count(),
+
+        "total_consultas": base.exclude(
+            tipo="pedido"
+        ).count(),
+        "tickets_hoy": tickets_hoy,
+        "tickets_semana": tickets_semana,
+        "tasa_cierre": tasa_cierre,
+        "tipo_mas_frecuente": tipo_mas_frecuente,
+        "respuestas_rapidas": emprendimiento.respuestas_rapidas.all(),
+    }
+
+    return render(
+        request,
+        "social/panel_atencion.html",
+        context
+    )
+
+
+
+
+
+@login_required
+@require_POST
+def responder_ticket(request, ticket_id):
+
+    emprendimiento = get_object_or_404(
+        Emprendimiento,
+        usuario=request.user
+    )
+
+    ticket = get_object_or_404(
+        SolicitudContacto,
+        id=ticket_id,
+        emprendimiento=emprendimiento
+    )
+
+    respuesta = request.POST.get("respuesta", "").strip()
+
+    if not respuesta:
+        messages.error(
+            request,
+            "Debes escribir una respuesta."
+        )
+        return redirect(
+            f"{reverse('panel_atencion')}?ticket={ticket.id}"
+        )
+
+    chat = Chat.objects.filter(
+        usuario=ticket.usuario,
+        emprendimiento=ticket.emprendimiento
+    ).first()
+
+    if chat:
+        MensajeChat.objects.create(
+            chat=chat,
+            tipo="emprendedor",
+            contenido=respuesta
+        )
+
+    ticket.estado = "respondida"
+    ticket.save(update_fields=["estado"])
+
+    Notificacion.objects.create(
+        usuario=ticket.usuario,
+        mensaje=(
+            f"{ticket.emprendimiento.nombre} ha respondido "
+            f"tu solicitud."
+        ),
+        tipo="info"
+    )
+
+    messages.success(
+        request,
+        "Respuesta enviada correctamente."
+    )
+
+    return redirect(
+        f"{reverse('panel_atencion')}?ticket={ticket.id}"
+    )
+
+
+
+@login_required
+def cerrar_ticket(request, ticket_id):
+
+    emprendimiento = get_object_or_404(
+        Emprendimiento,
+        usuario=request.user
+    )
+
+    ticket = get_object_or_404(
+        SolicitudContacto,
+        id=ticket_id,
+        emprendimiento=emprendimiento
+    )
+
+    # Cerrar ticket
+    ticket.estado = "cerrada"
+    ticket.save(update_fields=["estado"])
+
+    # Buscar siguiente ticket pendiente
+    siguiente = (
+        SolicitudContacto.objects
+        .filter(
+            emprendimiento=emprendimiento,
+            estado="pendiente"
+        )
+        .order_by("fecha")
+        .first()
+    )
+
+    if siguiente:
+        return redirect(
+            f"{reverse('panel_atencion')}?ticket={siguiente.id}"
+        )
+
+    return redirect("panel_atencion")
+
+
+
+@login_required
+@require_POST
+def crear_respuesta_rapida(request):
+
+    emprendimiento = get_object_or_404(
+        Emprendimiento,
+        usuario=request.user
+    )
+
+    titulo = request.POST.get("titulo", "").strip()
+    contenido = request.POST.get("contenido", "").strip()
+
+    if titulo and contenido:
+        RespuestaRapida.objects.create(
+            emprendimiento=emprendimiento,
+            titulo=titulo,
+            contenido=contenido
+        )
+
+    return redirect("panel_atencion")
+
+
+@login_required
+@require_POST
+def editar_respuesta_rapida(request, respuesta_id):
+
+    emprendimiento = get_object_or_404(
+        Emprendimiento,
+        usuario=request.user
+    )
+
+    respuesta = get_object_or_404(
+        RespuestaRapida,
+        id=respuesta_id,
+        emprendimiento=emprendimiento
+    )
+
+    titulo = request.POST.get("titulo", "").strip()
+    contenido = request.POST.get("contenido", "").strip()
+
+    if titulo and contenido:
+        respuesta.titulo = titulo
+        respuesta.contenido = contenido
+        respuesta.save()
+
+    return redirect("panel_atencion")
+
+
+@login_required
+def eliminar_respuesta_rapida(request, respuesta_id):
+
+    emprendimiento = get_object_or_404(
+        Emprendimiento,
+        usuario=request.user
+    )
+
+    respuesta = get_object_or_404(
+        RespuestaRapida,
+        id=respuesta_id,
+        emprendimiento=emprendimiento
+    )
+
+    respuesta.delete()
+
+    return redirect("panel_atencion")

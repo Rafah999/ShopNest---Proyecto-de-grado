@@ -147,6 +147,7 @@ class Notificacion(models.Model):
         ("aprobado", "Aprobado"),
         ("rechazado", "Rechazado"),
         ("info", "Información"),
+        ("panel_atencion", "Panel de Atención"),
     ]
 
     ESTADOS = [

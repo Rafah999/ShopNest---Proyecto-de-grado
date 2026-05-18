@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/panel_atencion.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="atencion-page">
+
+    <!-- SIDEBAR -->
+    <aside class="atencion-sidebar">
+
+        <div class="atencion-title">
+            Panel de Atención
+        </div>
+
+        <!-- RESUMEN -->
+        <div class="atencion-stats">
+
+            <div class="stat-card">
+                <span class="stat-number">{{ total_pedidos }}</span>
+                <span class="stat-label">Pedidos</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-number">{{ total_consultas }}</span>
+                <span class="stat-label">Consultas</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-number">{{ total_pendientes }}</span>
+                <span class="stat-label">Pendientes</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-number">{{ total_respondidos }}</span>
+                <span class="stat-label">Respondidos</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-number">{{ total_cerrados }}</span>
+                <span class="stat-label">Cerrados</span>
+            </div>
+
+        </div>
+
+        <!-- LISTA DE TICKETS -->
+        <div class="ticket-list">
+
+            {% if tickets %}
+
+                {% for ticket in tickets %}
+                <a
+                    href="?ticket={{ ticket.id }}"
+                    class="ticket-item {% if ticket_activo and ticket.id == ticket_activo.id %}active{% endif %}"
+                >
+
+                    <div class="ticket-user">
+                        {{ ticket.usuario.username }}
+                    </div>
+
+                    <div class="ticket-product">
+                        {% if ticket.producto %}
+                            {{ ticket.producto.nombre }}
+                        {% else %}
+                            Sin producto
+                        {% endif %}
+                    </div>
+
+                    <div class="ticket-type">
+                        {{ ticket.get_tipo_display }}
+                    </div>
+
+                </a>
+                {% endfor %}
+
+            {% else %}
+
+                <div class="no-tickets">
+                    No hay tickets todavía.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </aside>
+
+    <!-- PANEL DERECHO -->
+    <section class="atencion-detail">
+
+        {% if ticket_activo %}
+
+            <div class="detail-header">
+                <h2>{{ ticket_activo.get_tipo_display }}</h2>
+                <span class="estado {{ ticket_activo.estado }}">
+                    {{ ticket_activo.get_estado_display }}
+                </span>
+            </div>
+
+            <div class="detail-card">
+
+                <p>
+                    <strong>Cliente:</strong>
+                    {{ ticket_activo.usuario.username }}
+                </p>
+
+                <p>
+                    <strong>Producto:</strong>
+                    {% if ticket_activo.producto %}
+                        {{ ticket_activo.producto.nombre }}
+                    {% else %}
+                        Sin producto
+                    {% endif %}
+                </p>
+
+                <p>
+                    <strong>Fecha:</strong>
+                    {{ ticket_activo.fecha|date:"d/m/Y H:i" }}
+                </p>
+
+                {% if ticket_activo.mensaje %}
+                <div class="detail-message">
+                    {{ ticket_activo.mensaje }}
+                </div>
+                {% endif %}
+
+            </div>
+
+            <form
+                method="POST"
+                action="{% url 'responder_ticket' ticket_activo.id %}"
+                class="respuesta-form"
+            >
+                {% csrf_token %}
+
+                <textarea
+                    name="respuesta"
+                    rows="4"
+                    class="respuesta-textarea"
+                    placeholder="Escribe la respuesta para el cliente..."
+                    required
+                ></textarea>
+
+                <div class="detail-actions">
+                    <button type="submit" class="action-btn primary">
+                        Enviar respuesta
+                    </button>
+
+                    <a
+                        href="{% url 'cerrar_ticket' ticket_activo.id %}"
+                        class="action-btn secondary"
+                    >
+                        Cerrar ticket
+                    </a>
+                </div>
+            </form>
+
+        {% else %}
+
+            <div class="empty-detail">
+                Selecciona un ticket para ver los detalles.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}

@@ -400,3 +400,146 @@ def enviar_mensaje_chat(request):
         "mensaje_adicional": mensaje,
         "respuesta_sistema": respuesta_sistema,
     })
+
+
+
+@login_required
+def panel_atencion(request):
+
+    emprendimiento = get_object_or_404(
+        Emprendimiento,
+        usuario=request.user
+    )
+
+    tickets = (
+        SolicitudContacto.objects
+        .filter(emprendimiento=emprendimiento)
+        .select_related(
+            "usuario",
+            "producto"
+        )
+        .order_by("-fecha")
+    )
+
+    ticket_activo = None
+    ticket_id = request.GET.get("ticket")
+
+    if ticket_id:
+        ticket_activo = tickets.filter(id=ticket_id).first()
+
+    if not ticket_activo and tickets.exists():
+        ticket_activo = tickets.first()
+
+    context = {
+        "emprendimiento": emprendimiento,
+        "tickets": tickets,
+        "ticket_activo": ticket_activo,
+        "total_pendientes": tickets.filter(estado="pendiente").count(),
+        "total_respondidos": tickets.filter(estado="respondida").count(),
+        "total_cerrados": tickets.filter(estado="cerrada").count(),
+        "total_pedidos": tickets.filter(tipo="pedido").count(),
+        "total_consultas": tickets.exclude(tipo="pedido").count(),
+    }
+
+    return render(
+        request,
+        "social/panel_atencion.html",
+        context
+    )
+
+@login_required
+@require_POST
+def responder_ticket(request, ticket_id):
+
+    emprendimiento = get_object_or_404(
+        Emprendimiento,
+        usuario=request.user
+    )
+
+    ticket = get_object_or_404(
+        SolicitudContacto,
+        id=ticket_id,
+        emprendimiento=emprendimiento
+    )
+
+    respuesta = request.POST.get("respuesta", "").strip()
+
+    if not respuesta:
+        messages.error(
+            request,
+            "Debes escribir una respuesta."
+        )
+        return redirect(
+            f"{reverse('panel_atencion')}?ticket={ticket.id}"
+        )
+
+    chat = Chat.objects.filter(
+        usuario=ticket.usuario,
+        emprendimiento=ticket.emprendimiento
+    ).first()
+
+    if chat:
+        MensajeChat.objects.create(
+            chat=chat,
+            tipo="emprendedor",
+            contenido=respuesta
+        )
+
+    ticket.estado = "respondida"
+    ticket.save(update_fields=["estado"])
+
+    Notificacion.objects.create(
+        usuario=ticket.usuario,
+        mensaje=(
+            f"{ticket.emprendimiento.nombre} ha respondido "
+            f"tu solicitud."
+        ),
+        tipo="info"
+    )
+
+    messages.success(
+        request,
+        "Respuesta enviada correctamente."
+    )
+
+    return redirect(
+        f"{reverse('panel_atencion')}?ticket={ticket.id}"
+    )
+
+
+
+@login_required
+def cerrar_ticket(request, ticket_id):
+
+    emprendimiento = get_object_or_404(
+        Emprendimiento,
+        usuario=request.user
+    )
+
+    ticket = get_object_or_404(
+        SolicitudContacto,
+        id=ticket_id,
+        emprendimiento=emprendimiento
+    )
+
+    # Cerrar ticket
+    ticket.estado = "cerrada"
+    ticket.save(update_fields=["estado"])
+
+    # Buscar siguiente ticket pendiente
+    siguiente = (
+        SolicitudContacto.objects
+        .filter(
+            emprendimiento=emprendimiento,
+            estado="pendiente"
+        )
+        .order_by("fecha")
+        .first()
+    )
+
+    if siguiente:
+        return redirect(
+            f"{reverse('panel_atencion')}?ticket={siguiente.id}"
+        )
+
+    return redirect("panel_atencion")

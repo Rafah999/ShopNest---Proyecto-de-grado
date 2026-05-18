@@ -24,4 +24,19 @@ urlpatterns = [
         views.enviar_mensaje_chat,
         name="enviar_mensaje_chat"
     ),
+    path(
+        "panel-atencion/",
+        views.panel_atencion,
+        name="panel_atencion"
+    ),
+    path(
+        "panel-atencion/responder/<int:ticket_id>/",
+        views.responder_ticket,
+        name="responder_ticket"
+    ),
+    path(
+        "panel-atencion/cerrar/<int:ticket_id>/",
+        views.cerrar_ticket,
+        name="cerrar_ticket"
+    ),
 ]

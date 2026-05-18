@@ -64,6 +64,28 @@ def index(request):
     })
 
 
+def crear_notificacion_unica(usuario, mensaje, tipo):
+    """
+    Crea una notificación solo si el usuario no tiene
+    otra no leída del mismo tipo.
+    """
+
+    existe = Notificacion.objects.filter(
+        usuario=usuario,
+        tipo=tipo,
+        estado="no_leido"
+    ).exists()
+
+    if not existe:
+        Notificacion.objects.create(
+            usuario=usuario,
+            mensaje=mensaje,
+            tipo=tipo
+        )
+
+
+
+
 # --- Registro ---
 def registro(request):
     if request.method == "POST":

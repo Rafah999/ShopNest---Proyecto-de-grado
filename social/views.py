@@ -366,7 +366,7 @@ def enviar_mensaje_chat(request):
     # RESPUESTA AUTOMÁTICA DEL SISTEMA
     # --------------------------------------------------
     respuesta_sistema = (
-        f"Buenas. Se ha generado un ticket de atención "
+        f"Se ha generado un ticket de atención "
         f"relacionado con el producto "
         f"'{chat.producto.nombre}'. "
         f"El vendedor responderá lo antes posible."

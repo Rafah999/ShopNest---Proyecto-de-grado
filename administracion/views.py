@@ -60,7 +60,7 @@ def dashboard(request):
 
     total_comentarios = ComentarioProducto.objects.count()
 
-    total_chats = Chat.objects.count()
+    total_chats = total_chats.objects.count()
 
     context = {
 
@@ -304,7 +304,7 @@ def lista_comentarios(request):
 @user_passes_test(es_admin)
 def lista_chats(request):
 
-    chats = Chat.objects.select_related(
+    chats = chats.objects.select_related(
         "usuario",
         "emprendimiento"
     ).all()

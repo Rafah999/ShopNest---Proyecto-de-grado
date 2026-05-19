@@ -223,6 +223,14 @@ class Producto(models.Model):
 
 
 
+
+
+
+
+
+
+
+
 class ValoracionProducto(models.Model):
 
     ESTRELLAS = [

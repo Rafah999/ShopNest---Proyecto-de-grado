@@ -220,3 +220,54 @@ class Producto(models.Model):
 
     def __str__(self):
         return self.nombre
+
+
+
+class ValoracionProducto(models.Model):
+
+    ESTRELLAS = [
+        (1, "1 estrella"),
+        (2, "2 estrellas"),
+        (3, "3 estrellas"),
+        (4, "4 estrellas"),
+        (5, "5 estrellas"),
+    ]
+
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="valoraciones_productos"
+    )
+
+    producto = models.ForeignKey(
+        Producto,
+        on_delete=models.CASCADE,
+        related_name="valoraciones"
+    )
+
+    calificacion = models.PositiveSmallIntegerField(
+        choices=ESTRELLAS
+    )
+
+    comentario = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    fecha = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        unique_together = (
+            "usuario",
+            "producto"
+        )
+        ordering = ["-fecha"]
+
+    def __str__(self):
+        return (
+            f"{self.usuario.username} - "
+            f"{self.producto.nombre} "
+            f"({self.calificacion}★)"
+        )

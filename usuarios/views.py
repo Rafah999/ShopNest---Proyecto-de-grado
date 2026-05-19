@@ -651,17 +651,42 @@ def ver_producto(request, id):
 
     relacionados = Producto.objects.filter(
         categoria=producto.categoria,
-        visible=True
+        visible=True,
+        emprendimiento__publicado=True,
+        emprendimiento__estado="aprobado"
     ).exclude(id=producto.id)[:10]
 
-    return render(request,
+    # Valoraciones del producto
+    valoraciones = producto.valoraciones.select_related(
+        "usuario"
+    ).order_by("-fecha")
+
+    # Promedio de estrellas
+    promedio = 0
+
+    if valoraciones.exists():
+        total = sum(v.calificacion for v in valoraciones)
+        promedio = round(total / valoraciones.count(), 1)
+
+    # Valoración del usuario actual
+    mi_valoracion = ValoracionProducto.objects.filter(
+        usuario=request.user,
+        producto=producto
+    ).first()
+
+    return render(
+        request,
         "usuarios/ver_producto.html",
         {
             "producto": producto,
-            "relacionados": relacionados
+            "relacionados": relacionados,
+            "valoraciones": valoraciones,
+            "promedio": promedio,
+            "total_valoraciones": valoraciones.count(),
+            "mi_valoracion": mi_valoracion,
+            "estrellas": [1, 2, 3, 4, 5],
         }
     )
-
 
 @login_required
 def obtener_notificaciones(request):
@@ -866,3 +891,40 @@ def eliminar_imagen_carrusel(request, imagen_id):
     imagen.delete()
 
     return redirect("gestor_emprendimiento")
+
+
+
+
+@login_required
+def agregar_valoracion(request, producto_id):
+
+    producto = get_object_or_404(
+        Producto,
+        id=producto_id,
+        visible=True,
+        emprendimiento__publicado=True,
+        emprendimiento__estado="aprobado"
+    )
+
+    if request.method == "POST":
+
+        calificacion = request.POST.get("calificacion")
+        comentario = request.POST.get("comentario", "").strip()
+
+        if calificacion:
+
+            ValoracionProducto.objects.update_or_create(
+                usuario=request.user,
+                producto=producto,
+                defaults={
+                    "calificacion": int(calificacion),
+                    "comentario": comentario
+                }
+            )
+
+            messages.success(
+                request,
+                "Tu valoración fue guardada correctamente."
+            )
+
+    return redirect("ver_producto", id=producto.id)

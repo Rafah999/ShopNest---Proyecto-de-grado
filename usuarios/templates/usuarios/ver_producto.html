@@ -151,4 +151,143 @@
 
 </div>
 
+<!-- =========================
+     VALORACIONES Y COMENTARIOS
+========================= -->
+<div class="related-section">
+
+    <div class="related-title">
+        Valoraciones del producto
+    </div>
+
+    <!-- RESUMEN -->
+    <div class="valoracion-resumen">
+
+        <div class="promedio-estrellas">
+            <span class="promedio-numero">
+                {{ promedio|default:"0.0" }}
+            </span>
+
+            <div class="estrellas-promedio">
+                {% for i in estrellas %}
+                    {% if i <= promedio %}
+                        <i class="fa-solid fa-star"></i>
+                    {% else %}
+                        <i class="fa-regular fa-star"></i>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <span class="total-reviews">
+                {{ total_valoraciones }}
+                valoración{{ total_valoraciones|pluralize }}
+            </span>
+        </div>
+
+    </div>
+
+    <!-- FORMULARIO -->
+    <div class="valoracion-form-box">
+
+        <h3>
+            {% if mi_valoracion %}
+                Editar tu valoración
+            {% else %}
+                Deja tu valoración
+            {% endif %}
+        </h3>
+
+        <form
+            method="POST"
+            action="{% url 'agregar_valoracion' producto.id %}"
+            class="valoracion-form"
+        >
+            {% csrf_token %}
+
+            <div class="star-rating">
+                {% for i in estrellas %}
+                    <label>
+                        <input
+                            type="radio"
+                            name="calificacion"
+                            value="{{ i }}"
+                            {% if mi_valoracion and mi_valoracion.calificacion == i %}
+                                checked
+                            {% endif %}
+                            required
+                        >
+                        <i class="fa-solid fa-star"></i>
+                    </label>
+                {% endfor %}
+            </div>
+
+            <textarea
+                name="comentario"
+                rows="4"
+                placeholder="Escribe tu opinión sobre este producto..."
+            >{% if mi_valoracion %}{{ mi_valoracion.comentario }}{% endif %}</textarea>
+
+            <button
+                type="submit"
+                class="producto-action-btn"
+            >
+                {% if mi_valoracion %}
+                    Actualizar valoración
+                {% else %}
+                    Publicar valoración
+                {% endif %}
+            </button>
+        </form>
+
+    </div>
+
+    <!-- LISTADO DE COMENTARIOS -->
+    <div class="comentarios-list">
+
+        {% for valoracion in valoraciones %}
+
+            <div class="comentario-card">
+
+                <div class="comentario-header">
+
+                    <strong>
+                        {{ valoracion.usuario.username }}
+                    </strong>
+
+                    <div class="comentario-stars">
+                        {% for i in estrellas %}
+                            {% if i <= valoracion.calificacion %}
+                                <i class="fa-solid fa-star"></i>
+                            {% else %}
+                                <i class="fa-regular fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                </div>
+
+                {% if valoracion.comentario %}
+                    <p class="comentario-texto">
+                        {{ valoracion.comentario }}
+                    </p>
+                {% endif %}
+
+                <span class="comentario-fecha">
+                    {{ valoracion.fecha|date:"d/m/Y H:i" }}
+                </span>
+
+            </div>
+
+        {% empty %}
+
+            <div class="no-tickets">
+                Este producto aún no tiene valoraciones.
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
 {% endblock %}

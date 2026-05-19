@@ -13,29 +13,6 @@ from django.utils import timezone
 from datetime import timedelta
 
 
-from usuarios.models import Notificacion
-
-
-def crear_notificacion_panel(usuario):
-    """
-    Crea una sola notificación de Panel de Atención
-    mientras exista una no leída.
-    """
-
-    existe = Notificacion.objects.filter(
-        usuario=usuario,
-        tipo="panel_atencion",
-        estado="no_leido"
-    ).exists()
-
-    if not existe:
-        Notificacion.objects.create(
-            usuario=usuario,
-            tipo="panel_atencion",
-            mensaje="Tienes novedades en tu Panel de Atención."
-        )
-
-
 @login_required
 @require_POST
 def toggle_seguimiento(request, emprendimiento_id):
@@ -363,8 +340,6 @@ def enviar_mensaje_chat(request):
         mensaje=mensaje,
         estado="pendiente"
     )
-
-    crear_notificacion_panel(chat.emprendimiento.usuario)
 
     # --------------------------------------------------
     # MENSAJE PRINCIPAL DEL USUARIO
@@ -730,4 +705,3 @@ def eliminar_respuesta_rapida(request, respuesta_id):
     respuesta.delete()
 
     return redirect("panel_atencion")
-

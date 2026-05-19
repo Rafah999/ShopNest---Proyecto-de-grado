@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Chats</h1>
+
+{% for c in chats %}
+
+<div>
+
+    {{ c.usuario.username }}
+    -
+    {{ c.emprendimiento.nombre }}
+
+</div>
+
+{% endfor %}
+
+{% endblock %}

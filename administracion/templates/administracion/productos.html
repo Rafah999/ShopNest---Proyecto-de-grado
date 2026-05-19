@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Productos</h1>
+
+{% for p in productos %}
+
+<div>
+
+    <h3>{{ p.nombre }}</h3>
+
+    <p>{{ p.precio }}</p>
+
+    <p>{{ p.emprendimiento.nombre }}</p>
+
+</div>
+
+{% endfor %}
+
+{% endblock %}

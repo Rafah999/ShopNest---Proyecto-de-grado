@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Comentarios</h1>
+
+{% for c in comentarios %}
+
+<div>
+
+    <strong>
+        {{ c.usuario.username }}
+    </strong>
+
+    <p>
+        {{ c.comentario }}
+    </p>
+
+</div>
+
+{% endfor %}
+
+{% endblock %}

@@ -1,15 +1,125 @@
-{% extends 'base_admin.html' %}
-{% block title %}Dashboard{% endblock %}
+<!-- templates/administracion/dashboard.html -->
+
+{% extends 'base.html' %}
 
 {% block content %}
-    <h2>Bienvenido, {{ user.username }}</h2>
-    <p>Este es tu panel principal de administración.</p>
 
-    <section>
-        <h3>Resumen general</h3>
-        <ul>
-            <li>Total de usuarios: {{ total_usuarios }}</li>
-            <li>Usuarios activos: {{ usuarios_activos }}</li>
-        </ul>
-    </section>
+<h1>Panel Administrativo</h1>
+
+<div>
+
+    <h3>Total usuarios</h3>
+
+    <p>{{ total_usuarios }}</p>
+
+</div>
+
+<div>
+
+    <h3>Usuarios activos</h3>
+
+    <p>{{ usuarios_activos }}</p>
+
+</div>
+
+<div>
+
+    <h3>Emprendimientos</h3>
+
+    <p>{{ total_emprendimientos }}</p>
+
+</div>
+
+<div>
+
+    <h3>Solicitudes pendientes</h3>
+
+    <p>{{ emprendimientos_revision }}</p>
+
+</div>
+
+<div>
+
+    <h3>Productos</h3>
+
+    <p>{{ total_productos }}</p>
+
+</div>
+
+<div>
+
+    <h3>Comentarios</h3>
+
+    <p>{{ total_comentarios }}</p>
+
+</div>
+
+<div>
+
+    <h3>Chats</h3>
+
+    <p>{{ total_chats }}</p>
+
+</div>
+
+{% endblock %}
+
+<!-- templates/administracion/usuarios_list.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Usuarios</h1>
+
+{% for u in usuarios %}
+
+<div>
+
+    <h3>{{ u.username }}</h3>
+
+    <p>{{ u.email }}</p>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <input
+            type="hidden"
+            name="user_id"
+            value="{{ u.id }}"
+        >
+
+        <button
+            type="submit"
+            name="action"
+            value="make_admin"
+        >
+            Hacer admin
+        </button>
+
+        <button
+            type="submit"
+            name="action"
+            value="remove_admin"
+        >
+            Quitar admin
+        </button>
+
+        <button
+            type="submit"
+            name="action"
+            value="delete"
+        >
+            Eliminar
+        </button>
+
+    </form>
+
+</div>
+
+<hr>
+
+{% endfor %}
+
 {% endblock %}

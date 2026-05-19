@@ -134,32 +134,28 @@ main {
 
 .drawer {
     position: fixed;
-    top: 0;
-    right: -340px;
+    top: 8px;
+    right: -348px;
 
     width: 340px;
-    height: 100%;
+    height: calc(100vh - 16px);
 
-    background:
-    linear-gradient(
-        180deg,
-        #ffffff,
-        #f7f2ff
-    );
+    background: linear-gradient(180deg, #ffffff, #f7f2ff);
 
-    box-shadow:
-    -12px 0 40px rgba(0,0,0,.18);
+    border-radius: 28px;
+
+    overflow: hidden;
+
+    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.18);
 
     transition: right .35s ease;
-
     z-index: 2000;
 
-    border-left:
-    1px solid rgba(139, 92, 246, .12);
+    border: 1px solid rgba(139, 92, 246, 0.12);
 }
 
 .drawer.active {
-    right: 0;
+    right: 8px;
 }
 
 .drawer-content {
@@ -168,140 +164,132 @@ main {
     height: 100%;
 }
 
-/* HEADER */
-
 .drawer-header {
-
     padding: 26px 24px;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
 
-    background:
-    linear-gradient(
-        135deg,
-        #6a1b9a,
-        #8e24aa
-    );
-
+    background: linear-gradient(135deg, #6a1b9a, #8e24aa);
     color: white;
 
-    box-shadow:
-    0 4px 18px rgba(106,27,154,.22);
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+
+    box-shadow: 0 4px 18px rgba(106, 27, 154, 0.22);
 }
 
 .drawer-header h3 {
-
+    margin: 0;
     font-size: 24px;
     font-weight: 700;
-
-    letter-spacing: .3px;
 }
 
 .drawer-header span {
-
     width: 38px;
     height: 38px;
-
-    border-radius: 12px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    cursor: pointer;
+    border-radius: 12px;
+    border: 1.5px solid rgba(255,255,255,0.35);
 
+    cursor: pointer;
     font-size: 24px;
 
     transition: .22s;
-
-    border:
-    1.5px solid rgba(255,255,255,.35);
 }
 
 .drawer-header span:hover {
-
-    background:
-    rgba(255,255,255,.12);
-
+    background: rgba(255,255,255,0.12);
     transform: scale(1.05);
 }
 
-/* BODY */
-
 .drawer-body {
-
-    padding: 24px 20px;
-
+    padding: 20px;
     display: flex;
     flex-direction: column;
-
     gap: 16px;
+    overflow-y: auto;
 }
 
-/* =========================
-   BOTONES DRAWER
-========================= */
+.drawer-btn {
+    width: 100%;
+    min-height: 58px;
+    padding: 0 18px;
 
-.drawer-body{
+    border-radius: 18px;
+    border: 2px solid #8b5cf6;
 
-    padding:20px;
+    background: transparent;
+    color: #7c3aed;
 
-    display:flex;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 700;
 
-    flex-direction:column;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-    gap:16px;
+    transition: .25s ease;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.06);
+
+    position: relative;
 }
 
-.drawer-btn{
-
-    width:100%;
-
-    min-height:58px;
-
-    padding:0 18px;
-
-    border-radius:18px;
-
-    border:2px solid #8b5cf6;
-
-    background:transparent;
-
-    color:#7c3aed;
-
-    text-decoration:none;
-
-    font-size:15px;
-    font-weight:700;
-
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    transition:.25s ease;
+.drawer-btn:hover {
+    background: linear-gradient(135deg, #7c3aed, #9333ea);
+    color: white;
+    transform: translateX(4px);
+    box-shadow: 0 10px 22px rgba(124, 58, 237, 0.18);
 }
 
-.drawer-btn span{
-    pointer-events:none;
+.drawer-btn span:first-child {
+    flex: 1;
 }
 
-.drawer-btn:hover{
+.drawer-btn i {
+    width: 22px;
+    min-width: 22px;
+    text-align: center;
+    font-size: 16px;
+    margin-left: 12px;
+    flex-shrink: 0;
+}
 
-    background:
-    linear-gradient(
-        135deg,
-        #7c3aed,
-        #9333ea
-    );
+.drawer-count {
+    min-width: 22px;
+    height: 22px;
 
-    color:white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    transform:translateX(4px);
+    margin-left: 10px;
 
-    box-shadow:
-    0 10px 22px rgba(124,58,237,.18);
+    border-radius: 50%;
+
+    background: linear-gradient(135deg, #ff2e63, #ff4d6d);
+
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+
+    flex-shrink: 0;
+}
+
+.logout-btn {
+    border-color: #ef4444;
+    color: #dc2626;
+}
+
+.logout-btn:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
 }
 
 /* LOGOUT */
